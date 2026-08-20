@@ -237,9 +237,12 @@ function render(){
   DATA.weeks.forEach((w,i)=>{const b=document.createElement("button");b.textContent=w.label.split(" · ")[0];
     b.className=i===wk?"active":"";b.onclick=()=>{wk=i;save();render();window.scrollTo({top:0});};wb.appendChild(b);});
   document.querySelectorAll("#viewseg button").forEach(b=>b.classList.toggle("active",b.dataset.v===viewMode));
-  let ec=0,total=0; // counter tracks the 3×7 day meals (not desserts/extras)
+  let ec=0,total=0; // counter tracks everything checkable this week: day meals + desserts + extras
   week.days.forEach((d,di)=>SLOTS.forEach(s=>{total++;if(eaten[key(wk,di,s)])ec++;}));
-  document.getElementById("eatenline").innerHTML=`<b>${ec}</b> / ${total} meals eaten this week`;
+  if(week.desserts) week.desserts.forEach((m,i)=>{total++;if(eaten[key(wk,"D",i)])ec++;});
+  if(week.extras&&typeof week.extras==="object") ["breakfast","lunch","dinner","dessert"].forEach(s=>{
+    if(week.extras[s]&&week.extras[s].name){total++;if(eaten[key(wk,"X",s)])ec++;}});
+  document.getElementById("eatenline").innerHTML=`<b>${ec}</b> / ${total} eaten this week`;
   const main=document.getElementById("main");main.innerHTML="";
 
   if(viewMode==="course"){

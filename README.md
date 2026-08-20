@@ -35,9 +35,9 @@ Every meal row has: a **📋 copy** button (copies the exact recipe name for pas
 app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — keyed by recipe *name* so it
 applies wherever that dish appears), **⏭ next wk** (carry this meal into the upcoming week — for a
 dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals,
-desserts, and extras can all be checked off as eaten (dessert/extra checkmarks are tracked but kept
-out of the "X / 21 meals" day-meal count). Desserts and extras get copy + rating + carry (no swap).
-All syncs across devices.
+desserts, and extras can all be checked off as eaten, and the footer "X / N eaten this week" counter
+includes all of them (N = 21 day meals + desserts + extras). Desserts and extras get copy + rating +
+carry (no swap). All syncs across devices.
 
 ## Extra options (spare picks)
 Each week can include an `extras` block — one spare breakfast, lunch, dinner, and dessert — shown in
