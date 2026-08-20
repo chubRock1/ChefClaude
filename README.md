@@ -20,11 +20,13 @@ api/publish.js        <- POST /api/publish   -> validates + writes data/meals.js
 api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (checkmark sync)
 ```
 
-## Per-meal actions (copy / rate / swap)
+## Per-meal actions (copy / rate / carry / swap)
 Every meal row has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe
 app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — keyed by recipe *name* so it
-applies wherever that dish appears), and **⇄ swap** (flag this specific slot in the current menu to
-be replaced). Desserts get copy + rating (no swap). All of it syncs across devices.
+applies wherever that dish appears), **⏭ next wk** (carry this meal into the upcoming week — for a
+dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals and
+desserts can both be checked off as eaten (dessert checkmarks are tracked but kept out of the
+"X / 21 meals" day-meal count). Desserts get copy + rating + carry (no swap). All syncs across devices.
 
 ## Checkmarks reset automatically on a new menu
 Eaten checkmarks are scoped to the specific published menu (keyed by a signature of its meal
@@ -40,7 +42,8 @@ adopt the server's merged result; all merges are per-key with a sha-conflict ret
 degrades to per-device localStorage when offline or before the PIN is set.
 
 **Chef Claude reads these at planning time** from the raw state file — ratings tell it what to keep
-or avoid, swaps tell it which current-menu slots to replace:
+or avoid, swaps tell it which current-menu slots to replace, carry tells it which meals to pull into
+the upcoming week:
 `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
 
 ## Install on each device (iPhone/iPad)

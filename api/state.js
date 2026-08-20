@@ -5,6 +5,7 @@
 //        { week:0 }                          selected week
 //        { rate:{ name, rating } }           rating: "up" | "down" | null/"" to clear (keyed by recipe name)
 //        { swap:{ key, name, on } }          flag a menu slot to be swapped out (key = "weekLabel||day||slot")
+//        { carry:{ key, name, on } }         flag a meal to carry into the upcoming week (same key shape)
 // Reads/writes go straight to GitHub, so a change on one device shows on another within seconds
 // (the app reads through this route, not the redeployed static file). PIN-gated like the others.
 // Chef Claude reads ratings + swaps from the raw state.json URL at planning time.
@@ -20,6 +21,7 @@ function normalize(j) {
     week: Number.isInteger(s.week) ? s.week : 0,
     ratings: (s.ratings && typeof s.ratings === "object") ? s.ratings : {},
     swaps: (s.swaps && typeof s.swaps === "object") ? s.swaps : {},
+    carry: (s.carry && typeof s.carry === "object") ? s.carry : {},
   };
 }
 
@@ -42,6 +44,7 @@ module.exports = async (req, res) => {
       const week = Number.isInteger(body && body.week) ? body.week : null;
       const rate = (body && body.rate && typeof body.rate === "object") ? body.rate : null;
       const swap = (body && body.swap && typeof body.swap === "object") ? body.swap : null;
+      const carry = (body && body.carry && typeof body.carry === "object") ? body.carry : null;
 
       // Read-modify-write with one retry if another device committed in between (sha conflict).
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -57,6 +60,10 @@ module.exports = async (req, res) => {
         if (swap && typeof swap.key === "string" && swap.key) {
           if (swap.on) state.swaps[swap.key] = { name: String(swap.name || ""), at: new Date().toISOString() };
           else delete state.swaps[swap.key];
+        }
+        if (carry && typeof carry.key === "string" && carry.key) {
+          if (carry.on) state.carry[carry.key] = { name: String(carry.name || ""), at: new Date().toISOString() };
+          else delete state.carry[carry.key];
         }
         try {
           await writeJson(PATH, state, cur.sha, "Sync meal state");

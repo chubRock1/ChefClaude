@@ -63,10 +63,12 @@
   .act.up.on{background:var(--good);border-color:var(--good);color:#fff}
   .act.down.on{background:var(--accent2);border-color:var(--accent2);color:#fff}
   .act.swap.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .act.carry.on{background:#1f5c73;border-color:#1f5c73;color:#fff}
   .meal.toswap{box-shadow:inset 3px 0 0 var(--accent)}
+  .meal.tocarry{box-shadow:inset 3px 0 0 #1f5c73}
   .swap-badge{font-size:10px;font-weight:700;color:#fff;background:var(--accent);border-radius:6px;padding:1px 6px;margin-left:6px}
+  .carry-badge{font-size:10px;font-weight:700;color:#fff;background:#1f5c73;border-radius:6px;padding:1px 6px;margin-left:6px}
   .desserts{margin-top:22px}.desserts .day-card{background:linear-gradient(180deg,#fff7ef,var(--card) 60%)}
-  .desserts .meal{cursor:default}.desserts .meal .check{display:none}
   footer{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 14px calc(env(safe-area-inset-bottom) + 10px)}
   footer .row{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
   .reset{border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:13px;padding:11px 12px;border-radius:11px;cursor:pointer}
@@ -149,17 +151,19 @@
 const FALLBACK = {"title": "Chef Claude \u00b7 Meal Plan", "chef": "Chef Claude", "targets": {"satfatMealsMax": 10, "satfatDailyCeiling": 13}, "weeks": [{"label": "Week 1 \u00b7 Summer", "days": [{"day": "Monday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Tomato Salad with Tuna, Capers, and Black Olives", "satfat": 1.5, "cal": 160, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Orzo Salad with Arugula and Sun-Dried Tomatoes", "satfat": 2.5, "cal": 320, "time": "~25 min", "note": "make double \u2192 Tue", "leftover": false}}}, {"day": "Tuesday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Orzo Salad with Arugula and Sun-Dried Tomatoes", "satfat": 2.5, "cal": 320, "time": "serve cold", "note": "make-ahead from Mon", "leftover": true}, "dinner": {"name": "Chicken Cacciatore", "satfat": 2.0, "cal": 310, "time": "~50 min", "note": "", "leftover": false}}}, {"day": "Wednesday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Nectarine-and-Chickpea Couscous Salad with Honey-Cumin Dressing", "satfat": 0.5, "cal": 213, "time": "~15 min", "note": "fresh \u00b7 use peaches", "leftover": false}, "dinner": {"name": "Bulgur with Chickpeas, Spinach, and Za'atar", "satfat": 1.0, "cal": 200, "time": "~30 min", "note": "make double \u2192 Thu", "leftover": false}}}, {"day": "Thursday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Bulgur with Chickpeas, Spinach, and Za'atar", "satfat": 1.0, "cal": 200, "time": "warm 5 min", "note": "make-ahead from Wed", "leftover": true}, "dinner": {"name": "Spice-Roasted Salmon with Roasted Cauliflower", "satfat": 2.0, "cal": 270, "time": "~30 min", "note": "", "leftover": false}}}, {"day": "Friday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Green Bean Salad with Cilantro Sauce", "satfat": 2.0, "cal": 190, "time": "~20 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Grilled Tuna Steaks with Romesco", "satfat": 2.5, "cal": 310, "time": "~25 min", "note": "", "leftover": false}}}, {"day": "Saturday", "weekend": true, "meals": {"breakfast": {"name": "Fresh Corn Frittata & Smoked Mozzarella", "satfat": 1.9, "cal": 129, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Fattoosh Mixed Herb and Toasted Pita Salad", "satfat": 0.6, "cal": 169, "time": "~15 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Chicken Marbella", "satfat": 3.0, "cal": 339, "time": "~90 min +marinate", "note": "", "leftover": false}}}, {"day": "Sunday", "weekend": true, "meals": {"breakfast": {"name": "Weekend Morning Waffles", "satfat": 2.3, "cal": 373, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Succotash Salad with Lentils", "satfat": 2.0, "cal": 341, "time": "~45 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Grilled Beef Kebabs with Lemon and Rosemary Marinade", "satfat": 3.0, "cal": 310, "time": "~20 min +marinate", "note": "", "leftover": false}}}], "desserts": [{"name": "Honey-Glazed Peaches with Hazelnuts", "satfat": 0.5, "cal": 170, "time": "~15 min", "note": "uses your peaches", "leftover": false}, {"name": "Strawberries with Balsamic Vinegar", "satfat": 0.0, "cal": 100, "time": "~10 min", "note": "make ahead", "leftover": false}, {"name": "Greek Lemon Rice Pudding", "satfat": 2.5, "cal": 220, "time": "~40 min +chill", "note": "creamy", "leftover": false}]}, {"label": "Week 2 \u00b7 Summer", "days": [{"day": "Monday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Mediterranean Tuna Salad", "satfat": 0.5, "cal": 190, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Vindaloo-Style Potatoes", "satfat": 1.0, "cal": 340, "time": "~40 min", "note": "make double \u2192 Tue", "leftover": false}}}, {"day": "Tuesday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Vindaloo-Style Potatoes", "satfat": 1.0, "cal": 340, "time": "warm 5 min", "note": "make-ahead from Mon", "leftover": true}, "dinner": {"name": "Pan-Seared Pork Cutlets with Tomato Chutney", "satfat": 1.5, "cal": 230, "time": "~30 min", "note": "", "leftover": false}}}, {"day": "Wednesday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Cherry Tomato Salad with Feta and Olives", "satfat": 3.5, "cal": 130, "time": "~15 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Stewed Chickpeas and Spinach with Dill and Lemon", "satfat": 0.5, "cal": 180, "time": "~30 min", "note": "make double \u2192 Thu", "leftover": false}}}, {"day": "Thursday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Stewed Chickpeas and Spinach with Dill and Lemon", "satfat": 0.5, "cal": 180, "time": "warm 5 min", "note": "make-ahead from Wed", "leftover": true}, "dinner": {"name": "Grilled Sea Bass with Citrus and Black Olive Salad", "satfat": 1.5, "cal": 240, "time": "~25 min", "note": "", "leftover": false}}}, {"day": "Friday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Barley Salad with Celery and Miso Dressing", "satfat": 0.5, "cal": 190, "time": "~20 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Arroz con Pollo", "satfat": 1.0, "cal": 330, "time": "~50 min", "note": "", "leftover": false}}}, {"day": "Saturday", "weekend": true, "meals": {"breakfast": {"name": "Spanish Tortilla with Roasted Red Peppers and Peas", "satfat": 4.0, "cal": 340, "time": "~35 min", "note": "uses potatoes", "leftover": false}, "lunch": {"name": "Sesame-Lemon Cucumber Salad", "satfat": 1.0, "cal": 100, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Jamaican Jerk Pork Tenderloin", "satfat": 2.0, "cal": 248, "time": "~30 min +marinate", "note": "", "leftover": false}}}, {"day": "Sunday", "weekend": true, "meals": {"breakfast": {"name": "Weekend Morning Waffles", "satfat": 2.3, "cal": 373, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Ranch Salad with Red Potatoes & Smoky Chickpeas", "satfat": 1.2, "cal": 244, "time": "~25 min", "note": "fresh \u00b7 uses potatoes", "leftover": false}, "dinner": {"name": "Grilled Chicken Souvlaki", "satfat": 3.5, "cal": 460, "time": "~30 min +marinate", "note": "", "leftover": false}}}], "desserts": [{"name": "Roasted Pears with Dried Apricots and Pistachios", "satfat": 1.0, "cal": 290, "time": "~35 min", "note": "new", "leftover": false}, {"name": "Strawberries with Balsamic Vinegar", "satfat": 0.0, "cal": 100, "time": "~10 min", "note": "make ahead", "leftover": false}, {"name": "Greek Lemon Rice Pudding", "satfat": 2.5, "cal": 220, "time": "~40 min +chill", "note": "creamy", "leftover": false}]}]};
 let DATA = FALLBACK;
 const LS="chefclaude.eaten.v1", LSW="chefclaude.week.v1", LSR="chefclaude.requests.v1", LSP="chefclaude.pin.v1",
-      LSRT="chefclaude.ratings.v1", LSSW="chefclaude.swaps.v1";
+      LSRT="chefclaude.ratings.v1", LSSW="chefclaude.swaps.v1", LSCA="chefclaude.carry.v1";
 let eaten={}; try{eaten=JSON.parse(localStorage.getItem(LS)||"{}");}catch(e){}
 let ratings={}; try{ratings=JSON.parse(localStorage.getItem(LSRT)||"{}");}catch(e){}
 let swaps={}; try{swaps=JSON.parse(localStorage.getItem(LSSW)||"{}");}catch(e){}
+let carry={}; try{carry=JSON.parse(localStorage.getItem(LSCA)||"{}");}catch(e){}
 let menuSig=""; // identity of the currently-loaded menu; eaten checkmarks are scoped to it
 let wk=0; try{wk=parseInt(localStorage.getItem(LSW)||"0",10)||0;}catch(e){}
 let req={target:"next",veg:[],protein:[],notes:""};
 try{const r=JSON.parse(localStorage.getItem(LSR)||"null");if(r)req=Object.assign(req,r);}catch(e){}
 let pin=""; try{pin=localStorage.getItem(LSP)||"";}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(eaten));localStorage.setItem(LSW,String(wk));
-  localStorage.setItem(LSRT,JSON.stringify(ratings));localStorage.setItem(LSSW,JSON.stringify(swaps));}catch(e){}};
+  localStorage.setItem(LSRT,JSON.stringify(ratings));localStorage.setItem(LSSW,JSON.stringify(swaps));
+  localStorage.setItem(LSCA,JSON.stringify(carry));}catch(e){}};
 const swapKey=(label,day,slot)=>`${label}||${day}||${slot}`;
 const saveReq=()=>{try{localStorage.setItem(LSR,JSON.stringify(req));}catch(e){}};
 // Eaten keys are prefixed with the menu signature, so publishing a new menu starts fresh automatically.
@@ -205,19 +209,20 @@ function render(){
     main.appendChild(h);
     const card=document.createElement("div");card.className="day-card"+(d.weekend?" weekend":"");
     SLOTS.forEach(s=>{const m=d.meals[s],k=key(wk,di,s),on=!!eaten[k];
-      const sk=swapKey(week.label,d.day,s),swapped=!!swaps[sk],rt=ratings[m.name]&&ratings[m.name].rating;
-      const el=document.createElement("div");el.className="meal"+(on?" eaten":"")+(swapped?" toswap":"");
+      const sk=swapKey(week.label,d.day,s),swapped=!!swaps[sk],carried=!!carry[sk],rt=ratings[m.name]&&ratings[m.name].rating;
+      const el=document.createElement("div");el.className="meal"+(on?" eaten":"")+(swapped?" toswap":"")+(carried?" tocarry":"");
       el.innerHTML=`<div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-        <div class="mbody"><div class="mtag">${TAG[s]}${m.leftover?'<span class="lo-badge">make-ahead</span>':''}${swapped?'<span class="swap-badge">to swap</span>':''}</div>
+        <div class="mbody"><div class="mtag">${TAG[s]}${m.leftover?'<span class="lo-badge">make-ahead</span>':''}${swapped?'<span class="swap-badge">to swap</span>':''}${carried?'<span class="carry-badge">→ next week</span>':''}</div>
         <div class="nameline"><div class="mname">${m.name}</div><button class="copybtn" title="Copy recipe name">📋</button></div>
         <div class="mmeta"><span class="chip lo">${m.satfat.toFixed(1)} g sat</span><span class="chip">${m.cal} kcal</span>${m.time?`<span class="chip time">${m.time}</span>`:''}</div>
         ${m.note?`<div class="note">${m.note}</div>`:''}
-        <div class="mactions"><button class="act up${rt==='up'?' on':''}" title="Keep in rotation">👍</button><button class="act down${rt==='down'?' on':''}" title="Don't repeat">👎</button><button class="act swap${swapped?' on':''}" title="Swap this one out">⇄ swap</button></div></div>`;
+        <div class="mactions"><button class="act up${rt==='up'?' on':''}" title="Keep in rotation">👍</button><button class="act down${rt==='down'?' on':''}" title="Don't repeat">👎</button><button class="act carry${carried?' on':''}" title="Carry into the upcoming week">⏭ next wk</button><button class="act swap${swapped?' on':''}" title="Swap this one out">⇄ swap</button></div></div>`;
       el.onclick=()=>{toggleEaten(k);};
       const cb=el.querySelector(".copybtn");
       cb.onclick=(ev)=>{ev.stopPropagation();copyName(m.name,cb);};
       el.querySelector(".act.up").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"up");};
       el.querySelector(".act.down").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"down");};
+      el.querySelector(".act.carry").onclick=(ev)=>{ev.stopPropagation();toggleCarry(sk,m.name);};
       el.querySelector(".act.swap").onclick=(ev)=>{ev.stopPropagation();toggleSwap(sk,m.name);};
       card.appendChild(el);});
     main.appendChild(card);
@@ -227,16 +232,21 @@ function render(){
     const h=document.createElement("h2");h.className="day";h.innerHTML=`Desserts <span class="tot">slot into any day</span>`;
     wrap.appendChild(h);
     const card=document.createElement("div");card.className="day-card";
-    week.desserts.forEach(m=>{const el=document.createElement("div");el.className="meal";
-      const rt=ratings[m.name]&&ratings[m.name].rating;
-      el.innerHTML=`<div class="mbody"><div class="mtag">Dessert</div>
+    week.desserts.forEach((m,i)=>{const el=document.createElement("div");
+      const k=key(wk,"D",i),on=!!eaten[k];
+      const ck=swapKey(week.label,"Dessert",i),carried=!!carry[ck],rt=ratings[m.name]&&ratings[m.name].rating;
+      el.className="meal"+(on?" eaten":"")+(carried?" tocarry":"");
+      el.innerHTML=`<div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="mbody"><div class="mtag">Dessert${carried?'<span class="carry-badge">→ next week</span>':''}</div>
         <div class="nameline"><div class="mname">${m.name}</div><button class="copybtn" title="Copy recipe name">📋</button></div>
         <div class="mmeta"><span class="chip lo">${m.satfat.toFixed(1)} g sat</span><span class="chip">${m.cal} kcal</span>${m.time?`<span class="chip time">${m.time}</span>`:''}</div>
         ${m.note?`<div class="note">${m.note}</div>`:''}
-        <div class="mactions"><button class="act up${rt==='up'?' on':''}" title="Keep in rotation">👍</button><button class="act down${rt==='down'?' on':''}" title="Don't repeat">👎</button></div></div>`;
+        <div class="mactions"><button class="act up${rt==='up'?' on':''}" title="Keep in rotation">👍</button><button class="act down${rt==='down'?' on':''}" title="Don't repeat">👎</button><button class="act carry${carried?' on':''}" title="Carry into the upcoming week">⏭ next wk</button></div></div>`;
+      el.onclick=()=>{toggleEaten(k);};
       const cb=el.querySelector(".copybtn");cb.onclick=(ev)=>{ev.stopPropagation();copyName(m.name,cb);};
       el.querySelector(".act.up").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"up");};
       el.querySelector(".act.down").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"down");};
+      el.querySelector(".act.carry").onclick=(ev)=>{ev.stopPropagation();toggleCarry(ck,m.name);};
       card.appendChild(el);});
     wrap.appendChild(card);main.appendChild(wrap);
   }
@@ -304,22 +314,29 @@ function toggleSwap(k,name){
   if(on)swaps[k]={name,at:new Date().toISOString()};else delete swaps[k];
   save();render();postState({swap:{key:k,name,on}},true);
 }
+function toggleCarry(k,name){
+  const on=!carry[k];
+  if(on)carry[k]={name,at:new Date().toISOString()};else delete carry[k];
+  save();render();postState({carry:{key:k,name,on}},true);
+}
 // Adopt server state; local pending checkmarks win until their push confirms.
 function applyRemote(s){if(!s||typeof s!=="object")return;
   if(s.eaten&&typeof s.eaten==="object"){eaten=s.eaten;for(const k in pendSet)eaten[k]=true;for(const k of pendUnset)delete eaten[k];}
   if(s.ratings&&typeof s.ratings==="object")ratings=s.ratings;
   if(s.swaps&&typeof s.swaps==="object")swaps=s.swaps;
+  if(s.carry&&typeof s.carry==="object")carry=s.carry;
   save();render();
 }
 async function pullState(){if(!syncOn()||pulling)return;pulling=true;
   try{const r=await fetch(SYNC_URL,{method:"GET",headers:{"x-publish-secret":pin},cache:"no-store"});
     if(r.ok){const s=await r.json();
-      const remoteEmpty=!Object.keys(s.eaten||{}).length&&!Object.keys(s.ratings||{}).length&&!Object.keys(s.swaps||{}).length;
-      const localHas=Object.keys(eaten).length||Object.keys(ratings).length||Object.keys(swaps).length;
+      const remoteEmpty=!Object.keys(s.eaten||{}).length&&!Object.keys(s.ratings||{}).length&&!Object.keys(s.swaps||{}).length&&!Object.keys(s.carry||{}).length;
+      const localHas=Object.keys(eaten).length||Object.keys(ratings).length||Object.keys(swaps).length||Object.keys(carry).length;
       if(remoteEmpty&&localHas&&!Object.keys(pendSet).length&&!pendUnset.length){ // seed empty remote from this device
         Object.keys(eaten).forEach(k=>pendSet[k]=true);queuePush();
         Object.keys(ratings).forEach(n=>postState({rate:{name:n,rating:ratings[n].rating}},false));
         Object.keys(swaps).forEach(k=>postState({swap:{key:k,name:swaps[k].name,on:true}},false));
+        Object.keys(carry).forEach(k=>postState({carry:{key:k,name:carry[k].name,on:true}},false));
       }else{applyRemote(s);}
     }
   }catch(e){/* offline: keep local */}finally{pulling=false;}
