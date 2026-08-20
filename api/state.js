@@ -6,6 +6,7 @@
 //        { rate:{ name, rating } }           rating: "up" | "down" | null/"" to clear (keyed by recipe name)
 //        { swap:{ key, name, on } }          flag a menu slot to be swapped out (key = "weekLabel||day||slot")
 //        { carry:{ key, name, on } }         flag a meal to carry into the upcoming week (same key shape)
+//        { clearFlags:true }                 wipe all swap + carry flags (done when a new menu is published)
 // Reads/writes go straight to GitHub, so a change on one device shows on another within seconds
 // (the app reads through this route, not the redeployed static file). PIN-gated like the others.
 // Chef Claude reads ratings + swaps from the raw state.json URL at planning time.
@@ -45,6 +46,7 @@ module.exports = async (req, res) => {
       const rate = (body && body.rate && typeof body.rate === "object") ? body.rate : null;
       const swap = (body && body.swap && typeof body.swap === "object") ? body.swap : null;
       const carry = (body && body.carry && typeof body.carry === "object") ? body.carry : null;
+      const clearFlags = !!(body && body.clearFlags);
 
       // Read-modify-write with one retry if another device committed in between (sha conflict).
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -65,6 +67,7 @@ module.exports = async (req, res) => {
           if (carry.on) state.carry[carry.key] = { name: String(carry.name || ""), at: new Date().toISOString() };
           else delete state.carry[carry.key];
         }
+        if (clearFlags) { state.swaps = {}; state.carry = {}; } // a new menu was published — flags no longer apply
         try {
           await writeJson(PATH, state, cur.sha, "Sync meal state");
           return res.status(200).json(state);

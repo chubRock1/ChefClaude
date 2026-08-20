@@ -34,6 +34,10 @@ names). Publishing a genuinely new menu starts everyone with a clean slate — n
 needed. Re-publishing the exact same menu keeps your progress. The "Reset week" button still
 exists for clearing the current week's checkmarks mid-week if you want to re-track.
 
+**Swap and carry flags also clear on a new menu** (they applied to the old menu's slots), via a
+`clearFlags` call the app makes when it first loads a changed menu. Ratings persist (they're
+name-based preferences, not tied to one menu).
+
 ## Cross-device sync (checkmarks, ratings, swaps)
 Marking a meal eaten / rating it / flagging a swap on one device shows up on the others within a
 few seconds. The app reads state *live through `/api/state`* (not the redeployed static file), so
