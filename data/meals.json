@@ -245,7 +245,41 @@
           "note": "creamy",
           "leftover": false
         }
-      ]
+      ],
+      "extras": {
+        "breakfast": {
+          "name": "Peanut Butter Banana Baked Oatmeal",
+          "satfat": 2.0,
+          "cal": 240,
+          "time": "~40 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "lunch": {
+          "name": "Mediterranean Tuna Salad",
+          "satfat": 0.5,
+          "cal": 190,
+          "time": "~10 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "dinner": {
+          "name": "Arroz con Pollo",
+          "satfat": 1.0,
+          "cal": 330,
+          "time": "~50 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "dessert": {
+          "name": "Roasted Pears with Dried Apricots and Pistachios",
+          "satfat": 1.0,
+          "cal": 290,
+          "time": "~35 min",
+          "note": "spare",
+          "leftover": false
+        }
+      }
     },
     {
       "label": "Week 2 · Summer",
@@ -486,7 +520,41 @@
           "note": "creamy",
           "leftover": false
         }
-      ]
+      ],
+      "extras": {
+        "breakfast": {
+          "name": "Fresh Corn Frittata & Smoked Mozzarella",
+          "satfat": 1.9,
+          "cal": 129,
+          "time": "~25 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "lunch": {
+          "name": "Green Bean Salad with Cilantro Sauce",
+          "satfat": 2.0,
+          "cal": 190,
+          "time": "~20 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "dinner": {
+          "name": "Chicken Cacciatore",
+          "satfat": 2.0,
+          "cal": 310,
+          "time": "~50 min",
+          "note": "spare",
+          "leftover": false
+        },
+        "dessert": {
+          "name": "Honey-Glazed Peaches with Hazelnuts",
+          "satfat": 0.5,
+          "cal": 170,
+          "time": "~15 min",
+          "note": "spare",
+          "leftover": false
+        }
+      }
     }
   ]
 }

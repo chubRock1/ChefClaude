@@ -17,20 +17,38 @@ sw.js                 <- service worker: offline app shell; never caches /api; a
 icons/                <- app icons (192/512/apple-touch/favicon) — chef's toque on brand orange
 data/meals.json       <- the live menu the app fetches at runtime (published menus land here)
 data/requests.json    <- rolling log of requests sent from the app (newest first)
-data/state.json       <- synced state: { eaten, week, ratings, swaps, carry } across your devices
+data/state.json       <- synced state: { eaten, week, ratings, swaps, carry, eatenLog } across devices
 api/_github.js        <- shared helper: reads/writes repo files via the GitHub Contents API
 api/requests.js       <- POST /api/requests  -> appends to data/requests.json
 api/publish.js        <- POST /api/publish   -> validates + writes data/meals.json
 api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (eaten, ratings, swaps, carry)
 ```
 
+## Views: by day / by course
+A header toggle switches between **By day** (each day's breakfast/lunch/dinner together) and
+**By course** (all 7 breakfasts, then all lunches, then all dinners — each row labeled with its day).
+Handy when you mix and match — e.g. one day's breakfast with another day's lunch. Desserts and the
+Extra options section show in both views. The choice is remembered per device.
+
 ## Per-meal actions (copy / rate / carry / swap)
 Every meal row has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe
 app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — keyed by recipe *name* so it
 applies wherever that dish appears), **⏭ next wk** (carry this meal into the upcoming week — for a
-dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals and
-desserts can both be checked off as eaten (dessert checkmarks are tracked but kept out of the
-"X / 21 meals" day-meal count). Desserts get copy + rating + carry (no swap). All syncs across devices.
+dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals,
+desserts, and extras can all be checked off as eaten (dessert/extra checkmarks are tracked but kept
+out of the "X / 21 meals" day-meal count). Desserts and extras get copy + rating + carry (no swap).
+All syncs across devices.
+
+## Extra options (spare picks)
+Each week can include an `extras` block — one spare breakfast, lunch, dinner, and dessert — shown in
+an "Extra options" card at the end. These are extra choices to pull from if a planned meal doesn't
+happen. Chef Claude curates them at planning time.
+
+## Eaten history (what you actually ate)
+Every meal you check off is logged by recipe name + week + date in `state.json`'s `eatenLog`
+(persistent, survives new menus — capped at the most recent 200). Chef Claude reads it at planning
+time: meals that were served but **never** eaten are candidates to bring back into rotation sooner,
+and recently-eaten dishes get spaced out.
 
 ## Checkmarks reset automatically on a new menu
 Eaten checkmarks are scoped to the specific published menu (keyed by a signature of its meal
@@ -52,7 +70,7 @@ is set.
 
 **Chef Claude reads these at planning time** from the raw state file — ratings tell it what to keep
 or avoid, swaps tell it which current-menu slots to replace, carry tells it which meals to pull into
-the upcoming week:
+the upcoming week, and eatenLog tells it what was actually eaten (so un-eaten dishes return sooner):
 `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
 
 state.json shape: `{ eaten:{ "<menuSig>|<week>|<day>|<slot>":true }, week, ratings:{ "<recipe name>":{rating,at} }, swaps:{ "<weekLabel>||<day>||<slot>":{name,at} }, carry:{ same key shape } }`
@@ -132,8 +150,14 @@ Chef Claude reads requests without pasting from the public raw URL each planning
             "lunch": { ... }, "dinner": { ... } } }
         // ... 7 days ...
       ],
-      "desserts": [ { "name","satfat","cal","time","note" } ] }
+      "desserts": [ { "name","satfat","cal","time","note" } ],
+      "extras": {                          // optional: one spare pick per course
+        "breakfast": { "name","satfat","cal","time","note" },
+        "lunch": { ... }, "dinner": { ... }, "dessert": { ... } } }
     // ... Week 2 ...
   ]
 }
 ```
+Note: `extras` are not subject to the ≤10 g/day rule (they aren't a day); `api/publish.js` only
+validates the 7 days. The eaten-checkmark signature (`computeSig`) is based on day-meal names only,
+so adding/adjusting extras does not trigger a checkmark reset.

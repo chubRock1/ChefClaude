@@ -7,6 +7,7 @@
 //        { swap:{ key, name, on } }          flag a menu slot to be swapped out (key = "weekLabel||day||slot")
 //        { carry:{ key, name, on } }         flag a meal to carry into the upcoming week (same key shape)
 //        { clearFlags:true }                 wipe all swap + carry flags (done when a new menu is published)
+//        { log:{ "<recipe name>": "<weekLabel>" } }  record that these meals were eaten (persistent history)
 // Reads/writes go straight to GitHub, so a change on one device shows on another within seconds
 // (the app reads through this route, not the redeployed static file). PIN-gated like the others.
 // Chef Claude reads ratings + swaps from the raw state.json URL at planning time.
@@ -23,6 +24,7 @@ function normalize(j) {
     ratings: (s.ratings && typeof s.ratings === "object") ? s.ratings : {},
     swaps: (s.swaps && typeof s.swaps === "object") ? s.swaps : {},
     carry: (s.carry && typeof s.carry === "object") ? s.carry : {},
+    eatenLog: (s.eatenLog && typeof s.eatenLog === "object") ? s.eatenLog : {},
   };
 }
 
@@ -47,6 +49,7 @@ module.exports = async (req, res) => {
       const swap = (body && body.swap && typeof body.swap === "object") ? body.swap : null;
       const carry = (body && body.carry && typeof body.carry === "object") ? body.carry : null;
       const clearFlags = !!(body && body.clearFlags);
+      const log = (body && body.log && typeof body.log === "object") ? body.log : null;
 
       // Read-modify-write with one retry if another device committed in between (sha conflict).
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -68,6 +71,16 @@ module.exports = async (req, res) => {
           else delete state.carry[carry.key];
         }
         if (clearFlags) { state.swaps = {}; state.carry = {}; } // a new menu was published — flags no longer apply
+        if (log) { // record eaten meals as persistent history (by recipe name), keep the most recent 200
+          for (const name of Object.keys(log)) {
+            if (name) state.eatenLog[name] = { at: new Date().toISOString(), week: String(log[name] || "") };
+          }
+          const names = Object.keys(state.eatenLog);
+          if (names.length > 200) {
+            names.sort((a, b) => String(state.eatenLog[b].at).localeCompare(String(state.eatenLog[a].at)));
+            const trimmed = {}; names.slice(0, 200).forEach(n => trimmed[n] = state.eatenLog[n]); state.eatenLog = trimmed;
+          }
+        }
         try {
           await writeJson(PATH, state, cur.sha, "Sync meal state");
           return res.status(200).json(state);
