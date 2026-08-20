@@ -96,6 +96,23 @@ The app degrades gracefully: with no backend deployed it still runs as a static 
 (Send falls back to copy-to-clipboard, Publish shows "backend not reachable"). So it works
 the moment you push it, and gains the automation once the env vars below are set.
 
+## Weekly planning brief (what Chef Claude reads)
+To start a session: **"Chef Claude, pull our updates from the links and let's plan next week."**
+
+Read these raw files each planning session (GitHub caches them ~5 min):
+1. Requests — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/requests.json`
+   (vegetables / proteins / notes the user tapped in ✎ Requests).
+2. State — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
+   - `ratings` (keyed by recipe NAME): "up" = keep in rotation, "down" = don't repeat.
+   - `swaps` (key "WeekLabel||Day||slot"): replace this current-menu slot.
+   - `carry` (same key shape): the user missed this — include it in the upcoming week.
+   - `eatenLog` (keyed by recipe NAME → {at, week}): what was actually eaten. Meals that were
+     served but are NOT in the log are candidates to bring back sooner; recently-eaten ones get spaced out.
+3. Current menu (context) — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/meals.json`
+
+Then build the two weeks and apply the standing rules (see **Nutrition integrity** below), fill each
+week's `extras` (one spare breakfast/lunch/dinner/dessert), and hand over a `meals.json` to publish.
+
 ## One-time setup (done — kept here for reference / redeploys)
 Vercel env vars already configured for this project (Project -> Settings -> Environment Variables):
    - `GITHUB_TOKEN`  = fine-grained PAT scoped to `chubRock1/ChefClaude`, Contents: Read and write
