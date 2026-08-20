@@ -255,11 +255,11 @@
           "weekend": false,
           "meals": {
             "breakfast": {
-              "name": "Peanut Butter Banana Baked Oatmeal",
-              "satfat": 2,
-              "cal": 240,
-              "time": "~40 min",
-              "note": "",
+              "name": "Strawberry-Kiwi Smoothie",
+              "satfat": 0.2,
+              "cal": 176,
+              "time": "~5 min",
+              "note": "blend & go",
               "leftover": false
             },
             "lunch": {
@@ -285,11 +285,11 @@
           "weekend": false,
           "meals": {
             "breakfast": {
-              "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1,
-              "cal": 191,
-              "time": "~10 min",
-              "note": "",
+              "name": "Blueberry-Maple-Bran Muffins",
+              "satfat": 0.5,
+              "cal": 152,
+              "time": "make-ahead",
+              "note": "bake a batch",
               "leftover": false
             },
             "lunch": {
@@ -315,10 +315,10 @@
           "weekend": false,
           "meals": {
             "breakfast": {
-              "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
-              "satfat": 1,
-              "cal": 190,
-              "time": "5 min AM",
+              "name": "Apple-Cinnamon Steel-Cut Oatmeal",
+              "satfat": 0.5,
+              "cal": 152,
+              "time": "~15 min",
               "note": "",
               "leftover": false
             },
@@ -345,11 +345,11 @@
           "weekend": false,
           "meals": {
             "breakfast": {
-              "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1,
-              "cal": 191,
-              "time": "~10 min",
-              "note": "",
+              "name": "Almond Granola with Dried Fruit",
+              "satfat": 0.9,
+              "cal": 159,
+              "time": "make-ahead",
+              "note": "with yogurt",
               "leftover": false
             },
             "lunch": {
@@ -375,11 +375,11 @@
           "weekend": false,
           "meals": {
             "breakfast": {
-              "name": "Peanut Butter Banana Baked Oatmeal",
+              "name": "Mediterranean Overnight Scramble",
               "satfat": 2,
-              "cal": 240,
-              "time": "~40 min",
-              "note": "",
+              "cal": 204,
+              "time": "5 min AM",
+              "note": "make-ahead eggs",
               "leftover": false
             },
             "lunch": {
@@ -435,11 +435,11 @@
           "weekend": true,
           "meals": {
             "breakfast": {
-              "name": "Weekend Morning Waffles",
-              "satfat": 2.3,
-              "cal": 373,
-              "time": "~25 min",
-              "note": "",
+              "name": "Puffy Pillow Pancakes",
+              "satfat": 0.7,
+              "cal": 207,
+              "time": "~20 min",
+              "note": "weekend",
               "leftover": false
             },
             "lunch": {
