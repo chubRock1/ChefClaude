@@ -1,5 +1,5 @@
 {
-  "title": "Chef Claude \u00b7 Meal Plan",
+  "title": "Chef Claude · Meal Plan",
   "chef": "Chef Claude",
   "targets": {
     "satfatMealsMax": 10,
@@ -7,7 +7,7 @@
   },
   "weeks": [
     {
-      "label": "Week 1 \u00b7 Summer",
+      "label": "Week 1 · Summer (publish test)",
       "days": [
         {
           "day": "Monday",
@@ -15,7 +15,7 @@
           "meals": {
             "breakfast": {
               "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 191,
               "time": "~10 min",
               "note": "",
@@ -34,7 +34,7 @@
               "satfat": 2.5,
               "cal": 320,
               "time": "~25 min",
-              "note": "make double \u2192 Tue",
+              "note": "make double → Tue",
               "leftover": false
             }
           }
@@ -45,7 +45,7 @@
           "meals": {
             "breakfast": {
               "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 190,
               "time": "5 min AM",
               "note": "",
@@ -61,7 +61,7 @@
             },
             "dinner": {
               "name": "Chicken Cacciatore",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 310,
               "time": "~50 min",
               "note": "",
@@ -75,7 +75,7 @@
           "meals": {
             "breakfast": {
               "name": "Peanut Butter Banana Baked Oatmeal",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 240,
               "time": "~40 min",
               "note": "",
@@ -86,15 +86,15 @@
               "satfat": 0.5,
               "cal": 213,
               "time": "~15 min",
-              "note": "fresh \u00b7 use peaches",
+              "note": "fresh · use peaches",
               "leftover": false
             },
             "dinner": {
               "name": "Bulgur with Chickpeas, Spinach, and Za'atar",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 200,
               "time": "~30 min",
-              "note": "make double \u2192 Thu",
+              "note": "make double → Thu",
               "leftover": false
             }
           }
@@ -105,7 +105,7 @@
           "meals": {
             "breakfast": {
               "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 190,
               "time": "5 min AM",
               "note": "",
@@ -113,7 +113,7 @@
             },
             "lunch": {
               "name": "Bulgur with Chickpeas, Spinach, and Za'atar",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 200,
               "time": "warm 5 min",
               "note": "make-ahead from Wed",
@@ -121,7 +121,7 @@
             },
             "dinner": {
               "name": "Spice-Roasted Salmon with Roasted Cauliflower",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 270,
               "time": "~30 min",
               "note": "",
@@ -135,7 +135,7 @@
           "meals": {
             "breakfast": {
               "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 191,
               "time": "~10 min",
               "note": "",
@@ -143,7 +143,7 @@
             },
             "lunch": {
               "name": "Green Bean Salad with Cilantro Sauce",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 190,
               "time": "~20 min",
               "note": "fresh",
@@ -181,7 +181,7 @@
             },
             "dinner": {
               "name": "Chicken Marbella",
-              "satfat": 3.0,
+              "satfat": 3,
               "cal": 339,
               "time": "~90 min +marinate",
               "note": "",
@@ -203,7 +203,7 @@
             },
             "lunch": {
               "name": "Succotash Salad with Lentils",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 341,
               "time": "~45 min",
               "note": "fresh",
@@ -211,7 +211,7 @@
             },
             "dinner": {
               "name": "Grilled Beef Kebabs with Lemon and Rosemary Marinade",
-              "satfat": 3.0,
+              "satfat": 3,
               "cal": 310,
               "time": "~20 min +marinate",
               "note": "",
@@ -231,7 +231,7 @@
         },
         {
           "name": "Strawberries with Balsamic Vinegar",
-          "satfat": 0.0,
+          "satfat": 0,
           "cal": 100,
           "time": "~10 min",
           "note": "make ahead",
@@ -248,7 +248,7 @@
       ]
     },
     {
-      "label": "Week 2 \u00b7 Summer",
+      "label": "Week 2 · Summer",
       "days": [
         {
           "day": "Monday",
@@ -256,7 +256,7 @@
           "meals": {
             "breakfast": {
               "name": "Peanut Butter Banana Baked Oatmeal",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 240,
               "time": "~40 min",
               "note": "",
@@ -272,10 +272,10 @@
             },
             "dinner": {
               "name": "Vindaloo-Style Potatoes",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 340,
               "time": "~40 min",
-              "note": "make double \u2192 Tue",
+              "note": "make double → Tue",
               "leftover": false
             }
           }
@@ -286,7 +286,7 @@
           "meals": {
             "breakfast": {
               "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 191,
               "time": "~10 min",
               "note": "",
@@ -294,7 +294,7 @@
             },
             "lunch": {
               "name": "Vindaloo-Style Potatoes",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 340,
               "time": "warm 5 min",
               "note": "make-ahead from Mon",
@@ -316,7 +316,7 @@
           "meals": {
             "breakfast": {
               "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 190,
               "time": "5 min AM",
               "note": "",
@@ -335,7 +335,7 @@
               "satfat": 0.5,
               "cal": 180,
               "time": "~30 min",
-              "note": "make double \u2192 Thu",
+              "note": "make double → Thu",
               "leftover": false
             }
           }
@@ -346,7 +346,7 @@
           "meals": {
             "breakfast": {
               "name": "Granola Cups with Yogurt and Berries",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 191,
               "time": "~10 min",
               "note": "",
@@ -376,7 +376,7 @@
           "meals": {
             "breakfast": {
               "name": "Peanut Butter Banana Baked Oatmeal",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 240,
               "time": "~40 min",
               "note": "",
@@ -392,7 +392,7 @@
             },
             "dinner": {
               "name": "Arroz con Pollo",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 330,
               "time": "~50 min",
               "note": "",
@@ -406,7 +406,7 @@
           "meals": {
             "breakfast": {
               "name": "Spanish Tortilla with Roasted Red Peppers and Peas",
-              "satfat": 4.0,
+              "satfat": 4,
               "cal": 340,
               "time": "~35 min",
               "note": "uses potatoes",
@@ -414,7 +414,7 @@
             },
             "lunch": {
               "name": "Sesame-Lemon Cucumber Salad",
-              "satfat": 1.0,
+              "satfat": 1,
               "cal": 100,
               "time": "~10 min",
               "note": "fresh",
@@ -422,7 +422,7 @@
             },
             "dinner": {
               "name": "Jamaican Jerk Pork Tenderloin",
-              "satfat": 2.0,
+              "satfat": 2,
               "cal": 248,
               "time": "~30 min +marinate",
               "note": "",
@@ -447,7 +447,7 @@
               "satfat": 1.2,
               "cal": 244,
               "time": "~25 min",
-              "note": "fresh \u00b7 uses potatoes",
+              "note": "fresh · uses potatoes",
               "leftover": false
             },
             "dinner": {
@@ -464,7 +464,7 @@
       "desserts": [
         {
           "name": "Roasted Pears with Dried Apricots and Pistachios",
-          "satfat": 1.0,
+          "satfat": 1,
           "cal": 290,
           "time": "~35 min",
           "note": "new",
@@ -472,7 +472,7 @@
         },
         {
           "name": "Strawberries with Balsamic Vinegar",
-          "satfat": 0.0,
+          "satfat": 0,
           "cal": 100,
           "time": "~10 min",
           "note": "make ahead",
