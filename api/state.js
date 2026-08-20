@@ -1,8 +1,13 @@
-// /api/state — cross-device sync for the "eaten" checkmarks (and week selection).
-//   GET  /api/state            -> returns the shared state map { eaten:{key:true}, week:0 }
-//   POST /api/state {set,unset,week} -> merges the change into data/state.json and returns the map
-// Reads/writes go straight to GitHub, so a mark on one device shows on another within seconds
+// /api/state — cross-device sync for eaten checkmarks, meal ratings, and swap flags.
+//   GET  /api/state  -> { eaten:{key:true}, week:0, ratings:{name:{rating,at}}, swaps:{key:{name,at}} }
+//   POST /api/state  -> merges a change into data/state.json and returns the new state. Fields:
+//        { set:{key:true}, unset:[key] }   eaten checkmarks (key = "week|day|slot")
+//        { week:0 }                          selected week
+//        { rate:{ name, rating } }           rating: "up" | "down" | null/"" to clear (keyed by recipe name)
+//        { swap:{ key, name, on } }          flag a menu slot to be swapped out (key = "weekLabel||day||slot")
+// Reads/writes go straight to GitHub, so a change on one device shows on another within seconds
 // (the app reads through this route, not the redeployed static file). PIN-gated like the others.
+// Chef Claude reads ratings + swaps from the raw state.json URL at planning time.
 
 const { readJson, writeJson } = require("./_github");
 
@@ -10,7 +15,12 @@ const PATH = "data/state.json";
 
 function normalize(j) {
   const s = j && typeof j === "object" ? j : {};
-  return { eaten: (s.eaten && typeof s.eaten === "object") ? s.eaten : {}, week: Number.isInteger(s.week) ? s.week : 0 };
+  return {
+    eaten: (s.eaten && typeof s.eaten === "object") ? s.eaten : {},
+    week: Number.isInteger(s.week) ? s.week : 0,
+    ratings: (s.ratings && typeof s.ratings === "object") ? s.ratings : {},
+    swaps: (s.swaps && typeof s.swaps === "object") ? s.swaps : {},
+  };
 }
 
 module.exports = async (req, res) => {
@@ -30,6 +40,8 @@ module.exports = async (req, res) => {
       const set = (body && body.set && typeof body.set === "object") ? body.set : {};
       const unset = Array.isArray(body && body.unset) ? body.unset : [];
       const week = Number.isInteger(body && body.week) ? body.week : null;
+      const rate = (body && body.rate && typeof body.rate === "object") ? body.rate : null;
+      const swap = (body && body.swap && typeof body.swap === "object") ? body.swap : null;
 
       // Read-modify-write with one retry if another device committed in between (sha conflict).
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -38,6 +50,14 @@ module.exports = async (req, res) => {
         for (const k of Object.keys(set)) { if (set[k]) state.eaten[k] = true; else delete state.eaten[k]; }
         for (const k of unset) delete state.eaten[k];
         if (week !== null) state.week = week;
+        if (rate && typeof rate.name === "string" && rate.name) {
+          if (rate.rating === "up" || rate.rating === "down") state.ratings[rate.name] = { rating: rate.rating, at: new Date().toISOString() };
+          else delete state.ratings[rate.name];
+        }
+        if (swap && typeof swap.key === "string" && swap.key) {
+          if (swap.on) state.swaps[swap.key] = { name: String(swap.name || ""), at: new Date().toISOString() };
+          else delete state.swaps[swap.key];
+        }
         try {
           await writeJson(PATH, state, cur.sha, "Sync meal state");
           return res.status(200).json(state);

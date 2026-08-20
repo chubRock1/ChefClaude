@@ -20,11 +20,22 @@ api/publish.js        <- POST /api/publish   -> validates + writes data/meals.js
 api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (checkmark sync)
 ```
 
-## Cross-device sync (checkmarks)
-Marking a meal eaten on one device shows up on the others within a few seconds. The app reads
-state *live through `/api/state`* (not the redeployed static file), so there's no wait for a
-redeploy. Writes are debounced and merged server-side (per-key, with a sha-conflict retry), and
-the whole thing degrades to per-device localStorage when offline or before the PIN is set.
+## Per-meal actions (copy / rate / swap)
+Every meal row has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe
+app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — keyed by recipe *name* so it
+applies wherever that dish appears), and **⇄ swap** (flag this specific slot in the current menu to
+be replaced). Desserts get copy + rating (no swap). All of it syncs across devices.
+
+## Cross-device sync (checkmarks, ratings, swaps)
+Marking a meal eaten / rating it / flagging a swap on one device shows up on the others within a
+few seconds. The app reads state *live through `/api/state`* (not the redeployed static file), so
+there's no wait for a redeploy. Eaten writes are debounced; ratings/swaps post immediately and
+adopt the server's merged result; all merges are per-key with a sha-conflict retry. Everything
+degrades to per-device localStorage when offline or before the PIN is set.
+
+**Chef Claude reads these at planning time** from the raw state file — ratings tell it what to keep
+or avoid, swaps tell it which current-menu slots to replace:
+`https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
 
 ## Install on each device (iPhone/iPad)
 Open the Vercel URL in Safari -> Share -> **Add to Home Screen**. Launches full-screen with the
