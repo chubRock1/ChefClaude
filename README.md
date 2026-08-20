@@ -70,10 +70,11 @@ swaps / carry post immediately and adopt the server's merged result; all merges 
 sha-conflict retry. Everything degrades to per-device localStorage when offline or before the PIN
 is set.
 
-**Chef Claude reads these at planning time** from the raw state file — ratings tell it what to keep
+**Chef Claude reads these at planning time** from `data/state.json` — ratings tell it what to keep
 or avoid, swaps tell it which current-menu slots to replace, carry tells it which meals to pull into
-the upcoming week, and eatenLog tells it what was actually eaten (so un-eaten dishes return sooner):
-`https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
+the upcoming week, and eatenLog tells it what was actually eaten (so un-eaten dishes return sooner).
+Read it via the GitHub Contents API (fresh, not the CDN-cached raw URL) — see **Weekly planning
+brief** below for the exact fetch.
 
 state.json shape: `{ eaten:{ "<menuSig>|<week>|<day>|<slot>":true }, week, ratings:{ "<recipe name>":{rating,at} }, swaps:{ "<weekLabel>||<day>||<slot>":{name,at} }, carry:{ same key shape } }`
 
@@ -87,8 +88,8 @@ and `api/` at the repo root. Vercel serves `index.html` statically and turns eac
 
 ## How the loop works (no cost, no pasting, no commits)
 1. Send requests: the app's Requests sheet POSTs your picks to `/api/requests`, which
-   commits them to `data/requests.json`. Chef Claude reads that file's raw URL when you
-   next plan together — so you never paste requests.
+   commits them to `data/requests.json`. Chef Claude reads that file (via the GitHub Contents
+   API — see **Weekly planning brief**) when you next plan together — so you never paste requests.
 2. Plan: Chef Claude builds the week with you in chat and hands you a `meals.json`.
 3. Publish: paste it into Settings -> Publish a new week. `/api/publish` validates every
    day is <= 10 g sat fat, then commits `data/meals.json`. Vercel auto-redeploys and the
@@ -101,16 +102,29 @@ the moment you push it, and gains the automation once the env vars below are set
 ## Weekly planning brief (what Chef Claude reads)
 To start a session: **"Chef Claude, pull our updates from the links and let's plan next week."**
 
-Read these raw files each planning session (GitHub caches them ~5 min):
-1. Requests — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/requests.json`
+**Read via the GitHub Contents API, NOT the raw URL.** `raw.githubusercontent.com` is behind a CDN
+that caches each file ~5 min, so it often serves a stale copy at planning time. The Contents API is
+not on that CDN and always returns the latest commit. Fetch each file with header
+`Accept: application/vnd.github.raw` (returns the file content directly), e.g.:
+```
+curl -s -H "Accept: application/vnd.github.raw" \
+  "https://api.github.com/repos/chubRock1/ChefClaude/contents/data/state.json?ref=main"
+```
+(If a tool can't set headers, use the raw URL with a cache-buster query, e.g.
+`.../data/state.json?nocache=<random>` — but the API endpoint above is the reliable one.)
+
+Read these three files each planning session:
+1. Requests — `…/contents/data/requests.json?ref=main`
    (vegetables / proteins / notes the user tapped in ✎ Requests).
-2. State — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
+2. State — `…/contents/data/state.json?ref=main`
    - `ratings` (keyed by recipe NAME): "up" = keep in rotation, "down" = don't repeat.
    - `swaps` (key "WeekLabel||Day||slot"): replace this current-menu slot.
    - `carry` (same key shape): the user missed this — include it in the upcoming week.
    - `eatenLog` (keyed by recipe NAME → {at, week}): what was actually eaten. Meals that were
      served but are NOT in the log are candidates to bring back sooner; recently-eaten ones get spaced out.
-3. Current menu (context) — `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/meals.json`
+3. Current menu (context) — `…/contents/data/meals.json?ref=main`
+
+(base path `https://api.github.com/repos/chubRock1/ChefClaude`)
 
 Then build the two weeks, apply the standing rules (see **Nutrition integrity** below), and hand over
 a `meals.json` to publish.
@@ -129,9 +143,9 @@ Vercel env vars already configured for this project (Project -> Settings -> Envi
    - `GITHUB_BRANCH` = `main`
    - `PUBLISH_SECRET`= the PIN entered once per device under the gear icon (gates send/publish/sync)
 
-Chef Claude reads requests without pasting from the public raw URL each planning session:
-`https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/requests.json`
-(holds only vegetables/proteins/notes — nothing sensitive).
+Chef Claude reads requests without pasting each planning session via the GitHub Contents API
+(fresh, avoids the raw CDN cache): `GET https://api.github.com/repos/chubRock1/ChefClaude/contents/data/requests.json?ref=main`
+with header `Accept: application/vnd.github.raw` (holds only vegetables/proteins/notes — nothing sensitive).
 
 ## Security notes
 - All three endpoints (`/api/requests`, `/api/publish`, `/api/state`) require the
