@@ -1,9 +1,13 @@
-# Chef Claude — Weekly Meal Tracker (Option 1: automated plumbing, no per-use cost)
+# Chef Claude — Weekly Meal Tracker
 
-A private phone web app to view a two-week meal plan, check off meals as eaten, send
-"next week" requests, and publish new menus — **with no AI at runtime and no
-per-use cost**. Chef Claude still plans each week with the user in chat; the app just
-removes the manual pasting and manual git commits.
+A private phone web app to view a two-week meal plan, check off meals as eaten, rate them,
+flag ones to swap or carry forward, send "next week" requests, and publish new menus —
+**with no AI at runtime and no per-use cost**. Chef Claude still plans each week with the
+user in chat; the app just removes the manual pasting and manual git commits.
+
+- **Live app:** https://chef-claude-red-beta.vercel.app  (install via Safari → Add to Home Screen)
+- **Repo:** https://github.com/chubRock1/ChefClaude (public) · hosted on Vercel (auto-deploys on push to `main`)
+- **Installable PWA** (offline app shell + home-screen icon) and **cross-device sync** for everything you tap.
 
 ## Files
 ```
@@ -13,11 +17,11 @@ sw.js                 <- service worker: offline app shell; never caches /api; a
 icons/                <- app icons (192/512/apple-touch/favicon) — chef's toque on brand orange
 data/meals.json       <- the live menu the app fetches at runtime (published menus land here)
 data/requests.json    <- rolling log of requests sent from the app (newest first)
-data/state.json       <- shared "eaten" checkmarks, synced across your devices
+data/state.json       <- synced state: { eaten, week, ratings, swaps, carry } across your devices
 api/_github.js        <- shared helper: reads/writes repo files via the GitHub Contents API
 api/requests.js       <- POST /api/requests  -> appends to data/requests.json
 api/publish.js        <- POST /api/publish   -> validates + writes data/meals.json
-api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (checkmark sync)
+api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (eaten, ratings, swaps, carry)
 ```
 
 ## Per-meal actions (copy / rate / carry / swap)
@@ -38,17 +42,20 @@ exists for clearing the current week's checkmarks mid-week if you want to re-tra
 `clearFlags` call the app makes when it first loads a changed menu. Ratings persist (they're
 name-based preferences, not tied to one menu).
 
-## Cross-device sync (checkmarks, ratings, swaps)
-Marking a meal eaten / rating it / flagging a swap on one device shows up on the others within a
-few seconds. The app reads state *live through `/api/state`* (not the redeployed static file), so
-there's no wait for a redeploy. Eaten writes are debounced; ratings/swaps post immediately and
-adopt the server's merged result; all merges are per-key with a sha-conflict retry. Everything
-degrades to per-device localStorage when offline or before the PIN is set.
+## Cross-device sync (eaten, ratings, swaps, carry)
+Anything you tap — checking a meal eaten, a 👍/👎 rating, a ⇄ swap or ⏭ carry flag — shows up on
+your other devices within a few seconds. The app reads state *live through `/api/state`* (not the
+redeployed static file), so there's no wait for a redeploy. Eaten writes are debounced; ratings /
+swaps / carry post immediately and adopt the server's merged result; all merges are per-key with a
+sha-conflict retry. Everything degrades to per-device localStorage when offline or before the PIN
+is set.
 
 **Chef Claude reads these at planning time** from the raw state file — ratings tell it what to keep
 or avoid, swaps tell it which current-menu slots to replace, carry tells it which meals to pull into
 the upcoming week:
 `https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/state.json`
+
+state.json shape: `{ eaten:{ "<menuSig>|<week>|<day>|<slot>":true }, week, ratings:{ "<recipe name>":{rating,at} }, swaps:{ "<weekLabel>||<day>||<slot>":{name,at} }, carry:{ same key shape } }`
 
 ## Install on each device (iPhone/iPad)
 Open the Vercel URL in Safari -> Share -> **Add to Home Screen**. Launches full-screen with the
@@ -71,25 +78,21 @@ The app degrades gracefully: with no backend deployed it still runs as a static 
 (Send falls back to copy-to-clipboard, Publish shows "backend not reachable"). So it works
 the moment you push it, and gains the automation once the env vars below are set.
 
-## One-time setup (Claude Code can do this)
-1. GitHub token: create a fine-grained personal access token scoped to THIS repo only,
-   with Contents: Read and write.
-2. Vercel env vars (Project -> Settings -> Environment Variables):
-   - `GITHUB_TOKEN`  = the token above
-   - `GITHUB_REPO`   = `owner/repo`
-   - `GITHUB_BRANCH` = `main` (optional; defaults to main)
-   - `PUBLISH_SECRET`= a PIN you choose. Enter it once in the app under the gear icon so
-     only you can send/publish.
-3. Redeploy. Open the app -> gear -> enter the PIN.
-4. Let Chef Claude read requests without pasting: if the repo is public, share this raw
-   URL once and Chef Claude fetches it each planning session:
-   `https://raw.githubusercontent.com/<owner>/<repo>/<branch>/data/requests.json`
-   (it holds only vegetables/proteins/notes — nothing sensitive). If the repo is private,
-   add a tiny public GET read route, or just tell Chef Claude the picks in chat.
+## One-time setup (done — kept here for reference / redeploys)
+Vercel env vars already configured for this project (Project -> Settings -> Environment Variables):
+   - `GITHUB_TOKEN`  = fine-grained PAT scoped to `chubRock1/ChefClaude`, Contents: Read and write
+   - `GITHUB_REPO`   = `chubRock1/ChefClaude`
+   - `GITHUB_BRANCH` = `main`
+   - `PUBLISH_SECRET`= the PIN entered once per device under the gear icon (gates send/publish/sync)
+
+Chef Claude reads requests without pasting from the public raw URL each planning session:
+`https://raw.githubusercontent.com/chubRock1/ChefClaude/main/data/requests.json`
+(holds only vegetables/proteins/notes — nothing sensitive).
 
 ## Security notes
-- Both endpoints require the `x-publish-secret` header to match `PUBLISH_SECRET`, so a
-  public site can't be spammed or have menus published by anyone but you.
+- All three endpoints (`/api/requests`, `/api/publish`, `/api/state`) require the
+  `x-publish-secret` header to match `PUBLISH_SECRET`, so a public site can't be spammed,
+  have menus published, or have state written by anyone but you.
 - The GitHub token lives ONLY in Vercel env vars (server-side), never in `index.html`.
 - No API keys are in the client. No AI is called anywhere, so nothing is metered — this
   stays on free tiers for a personal app.
@@ -102,10 +105,15 @@ the moment you push it, and gains the automation once the env vars below are set
   OK (incl. bacon/pancetta), fish never as a leftover, only 2 non-consecutive make-ahead
   lunches per week, and beef at most once a month.
 
+## Done since the original package
+- PWA: `manifest.webmanifest` + `sw.js` + generated icons — installable, offline app shell.
+- Cross-device sync of eaten / ratings / swaps / carry via `data/state.json` + `api/state.js`.
+- Per-meal 📋 copy, 👍/👎 rating, ⏭ carry-to-next-week, ⇄ swap; desserts checkable + copy/rate/carry.
+- Eaten checkmarks scoped to the published menu (auto-reset on a new menu); swap/carry flags auto-clear on a new menu.
+- iOS zoom fix (16px inputs so the Publish sheet doesn't zoom/hide its Close button).
+
 ## Optional next touches
-- PWA: add `manifest.json` (theme #D24400, icons) + a small service worker for
-  Add-to-Home-Screen and offline use.
-- A "pending requests" view (GET data/requests.json) so you can see what's queued.
+- A "pending requests" / "flagged items" view (GET data/state.json) so you can review 👎 / ⇄ / ⏭ before planning.
 - A weekly sat-fat chart, a snack-budget tally (13 g minus meals eaten), a "today" scroll.
 
 ## meals.json shape
