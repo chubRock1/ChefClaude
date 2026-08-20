@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#D24400"/>
+<title>Chef Claude · Meals</title>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Chef Claude"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<style>
+  :root{--bg:#faf7f3;--card:#fff;--ink:#2b2622;--muted:#8a8078;--accent:#d24400;--accent2:#c0504d;
+    --line:#ece5dd;--good:#4c8a3f;--weekend:#f0f5ea;--eaten:#eef6ea;--pill:#f4ede4;
+    --shadow:0 1px 3px rgba(60,40,20,.08),0 6px 16px rgba(60,40,20,.05);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:0 14px calc(env(safe-area-inset-bottom) + 90px)}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--bg) 70%,rgba(250,247,243,0));padding:calc(env(safe-area-inset-top) + 12px) 0 6px}
+  .title{display:flex;align-items:center;gap:8px;padding:0 2px}
+  .title h1{font-size:20px;margin:0;letter-spacing:-.02em;color:var(--accent)}
+  .title .sub{font-size:12px;color:var(--muted)}
+  .title .spacer{flex:1}
+  .iconbtn{border:1px solid var(--line);background:#fff;color:var(--accent);font-weight:700;font-size:12px;padding:7px 11px;border-radius:20px;cursor:pointer}
+  .iconbtn.gear{padding:7px 10px}
+  .weekbar{display:flex;gap:6px;margin-top:10px;background:var(--pill);padding:4px;border-radius:12px}
+  .weekbar button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;padding:9px 6px;border-radius:9px;cursor:pointer;transition:.15s}
+  .weekbar button.active{background:var(--card);color:var(--accent);box-shadow:var(--shadow)}
+  .summary{display:flex;gap:8px;margin-top:10px}
+  .stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px;box-shadow:var(--shadow)}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .stat .v{font-size:17px;font-weight:700;margin-top:2px}.stat .v small{font-size:11px;color:var(--muted);font-weight:600}
+  .progress{height:5px;border-radius:4px;background:var(--line);margin-top:7px;overflow:hidden}
+  .progress>i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+  h2.day{font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin:18px 4px 8px;display:flex;align-items:center;gap:8px}
+  h2.day .tot{margin-left:auto;font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0}h2.day .tot b{color:var(--accent2)}
+  .day-card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .day-card.weekend{background:linear-gradient(180deg,var(--weekend),var(--card) 60%)}
+  .meal{display:flex;gap:12px;padding:12px 13px;border-top:1px solid var(--line);cursor:pointer;align-items:flex-start}
+  .meal:first-child{border-top:0}.meal.eaten{background:var(--eaten)}
+  .check{flex:0 0 24px;height:24px;margin-top:2px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff}
+  .meal.eaten .check{background:var(--good);border-color:var(--good)}
+  .check svg{width:13px;height:13px;opacity:0;transform:scale(.6);transition:.15s}.meal.eaten .check svg{opacity:1;transform:scale(1)}
+  .mbody{flex:1;min-width:0}
+  .mtag{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+  .mname{font-size:14.5px;line-height:1.3;margin:2px 0 0;font-weight:600}
+  .meal.eaten .mname{text-decoration:line-through;text-decoration-color:#bcae9e;color:var(--muted)}
+  .mmeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{font-size:11px;color:var(--muted);background:var(--pill);border-radius:20px;padding:2px 8px;font-weight:600}
+  .chip.lo{color:var(--accent2)}.chip.time{color:#6b7a8f}
+  .note{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:5px}
+  .lo-badge{font-size:10px;font-weight:700;color:#1f5c73;background:#e7f0f4;border-radius:6px;padding:1px 6px;margin-left:6px}
+  .desserts{margin-top:22px}.desserts .day-card{background:linear-gradient(180deg,#fff7ef,var(--card) 60%)}
+  .desserts .meal{cursor:default}.desserts .meal .check{display:none}
+  footer{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 14px calc(env(safe-area-inset-bottom) + 10px)}
+  footer .row{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .reset{border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:13px;padding:11px 12px;border-radius:11px;cursor:pointer}
+  .eatenline{flex:1;font-size:12.5px;color:var(--muted)}.eatenline b{color:var(--ink)}
+  .hint{text-align:center;color:var(--muted);font-size:11.5px;margin:14px 4px 0}
+  .sheet-bg{position:fixed;inset:0;background:rgba(40,30,20,.4);z-index:40;opacity:0;pointer-events:none;transition:.2s}
+  .sheet-bg.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--bg);border-radius:20px 20px 0 0;max-width:640px;margin:0 auto;transform:translateY(100%);transition:.25s cubic-bezier(.2,.7,.2,1);max-height:92vh;overflow:auto;padding:6px 16px calc(env(safe-area-inset-bottom) + 18px);box-shadow:0 -8px 30px rgba(40,30,20,.2)}
+  .sheet.open{transform:translateY(0)}
+  .grab{width:40px;height:4px;background:#d8cfc4;border-radius:3px;margin:8px auto 4px}
+  .sheet h3{margin:6px 2px 2px;font-size:18px;color:var(--accent)}
+  .sheet p.lead{margin:2px 2px 12px;font-size:12.5px;color:var(--muted)}
+  .seg{display:flex;gap:6px;background:var(--pill);padding:4px;border-radius:12px;margin-bottom:14px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:700;font-size:12.5px;padding:9px 6px;border-radius:9px;cursor:pointer}
+  .seg button.active{background:#fff;color:var(--accent);box-shadow:var(--shadow)}
+  .lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:12px 2px 7px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .tog{border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:600;padding:8px 12px;border-radius:20px;cursor:pointer;transition:.12s}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .field{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:11px;font:inherit;font-size:14px;background:#fff}
+  textarea.field{resize:vertical;min-height:64px}
+  .rules{font-size:11.5px;color:var(--muted);background:#f3ede4;border-radius:10px;padding:9px 11px;margin-top:12px}
+  .sheet-actions{display:flex;gap:10px;margin-top:14px}
+  .btn-primary{flex:1;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:14.5px;padding:13px;border-radius:12px;cursor:pointer}
+  .btn-ghost{border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:13px;padding:13px 14px;border-radius:12px;cursor:pointer}
+  .status{font-size:12.5px;font-weight:700;text-align:center;margin-top:10px;min-height:16px}
+  .status.ok{color:var(--good)}.status.err{color:#c0392b}
+  .preview{white-space:pre-wrap;font-size:12px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title"><h1>Chef Claude</h1><span class="sub" id="subtitle"></span><span class="spacer"></span>
+      <button class="iconbtn" id="reqOpen">✎ Requests</button>
+      <button class="iconbtn gear" id="setOpen" title="Settings">⚙</button></div>
+    <div class="weekbar" id="weekbar"></div>
+    <div class="summary" id="summary"></div>
+  </header>
+  <main id="main"></main>
+  <p class="hint" id="dataHint">Tap a meal to mark it eaten. Progress saves on this device.</p>
+</div>
+<footer><div class="row"><span class="eatenline" id="eatenline"></span><button class="reset" id="resetBtn">Reset week</button></div></footer>
+
+<!-- Requests sheet -->
+<div class="sheet-bg" id="reqBg"></div>
+<div class="sheet" id="reqSheet">
+  <div class="grab"></div>
+  <h3>Requests for next week</h3>
+  <p class="lead">Tap what you'd like Chef Claude to use, then send. Saves on this device and goes to your plan.</p>
+  <div class="seg" id="targetSeg"><button data-t="next" class="active">Next new week</button><button data-t="week2">Update Week 2</button></div>
+  <div class="lbl">Vegetables to use</div><div class="chips" id="vegChips"></div>
+  <div class="lbl">Proteins to use</div><div class="chips" id="protChips"></div>
+  <div class="lbl">Anything else</div>
+  <textarea class="field" id="reqNote" placeholder="e.g. more grilled dishes, use up the eggplant, lighter lunches…"></textarea>
+  <div class="rules">Standing rules already applied: no shellfish · no lamb · pork OK (incl. bacon/pancetta) · fish never as leftovers · <b>beef only once a month</b> · every day ≤ 10 g sat fat.</div>
+  <div class="sheet-actions"><button class="btn-primary" id="sendBtn">Send to Chef Claude</button><button class="btn-ghost" id="clearReq">Clear</button><button class="btn-ghost" id="reqClose">Close</button></div>
+  <div class="status" id="reqStatus"></div>
+  <div class="preview" id="reqPreview" style="display:none"></div>
+</div>
+
+<!-- Settings & Publish sheet -->
+<div class="sheet-bg" id="setBg"></div>
+<div class="sheet" id="setSheet">
+  <div class="grab"></div>
+  <h3>Settings &amp; Publish</h3>
+  <p class="lead">One-time setup: enter the PIN you set in Vercel (PUBLISH_SECRET). It's stored only on this device and lets this app send requests and publish menus.</p>
+  <div class="lbl">Your PIN</div>
+  <input class="field" id="pinInput" type="password" placeholder="PUBLISH_SECRET" autocomplete="off"/>
+  <div class="divider"></div>
+  <div class="lbl">Publish a new week</div>
+  <p class="lead" style="margin-top:0">Paste the <b>meals.json</b> Chef Claude gives you and tap publish. It checks every day is ≤ 10 g sat fat, then updates your site automatically — no commit needed.</p>
+  <textarea class="field" id="publishBox" placeholder='{ "weeks": [ … ] }'></textarea>
+  <div class="sheet-actions"><button class="btn-primary" id="publishBtn">Publish new week</button><button class="btn-ghost" id="setClose">Close</button></div>
+  <div class="status" id="setStatus"></div>
+</div>
+
+<script>
+const FALLBACK = {"title": "Chef Claude \u00b7 Meal Plan", "chef": "Chef Claude", "targets": {"satfatMealsMax": 10, "satfatDailyCeiling": 13}, "weeks": [{"label": "Week 1 \u00b7 Summer", "days": [{"day": "Monday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Tomato Salad with Tuna, Capers, and Black Olives", "satfat": 1.5, "cal": 160, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Orzo Salad with Arugula and Sun-Dried Tomatoes", "satfat": 2.5, "cal": 320, "time": "~25 min", "note": "make double \u2192 Tue", "leftover": false}}}, {"day": "Tuesday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Orzo Salad with Arugula and Sun-Dried Tomatoes", "satfat": 2.5, "cal": 320, "time": "serve cold", "note": "make-ahead from Mon", "leftover": true}, "dinner": {"name": "Chicken Cacciatore", "satfat": 2.0, "cal": 310, "time": "~50 min", "note": "", "leftover": false}}}, {"day": "Wednesday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Nectarine-and-Chickpea Couscous Salad with Honey-Cumin Dressing", "satfat": 0.5, "cal": 213, "time": "~15 min", "note": "fresh \u00b7 use peaches", "leftover": false}, "dinner": {"name": "Bulgur with Chickpeas, Spinach, and Za'atar", "satfat": 1.0, "cal": 200, "time": "~30 min", "note": "make double \u2192 Thu", "leftover": false}}}, {"day": "Thursday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Bulgur with Chickpeas, Spinach, and Za'atar", "satfat": 1.0, "cal": 200, "time": "warm 5 min", "note": "make-ahead from Wed", "leftover": true}, "dinner": {"name": "Spice-Roasted Salmon with Roasted Cauliflower", "satfat": 2.0, "cal": 270, "time": "~30 min", "note": "", "leftover": false}}}, {"day": "Friday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Green Bean Salad with Cilantro Sauce", "satfat": 2.0, "cal": 190, "time": "~20 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Grilled Tuna Steaks with Romesco", "satfat": 2.5, "cal": 310, "time": "~25 min", "note": "", "leftover": false}}}, {"day": "Saturday", "weekend": true, "meals": {"breakfast": {"name": "Fresh Corn Frittata & Smoked Mozzarella", "satfat": 1.9, "cal": 129, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Fattoosh Mixed Herb and Toasted Pita Salad", "satfat": 0.6, "cal": 169, "time": "~15 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Chicken Marbella", "satfat": 3.0, "cal": 339, "time": "~90 min +marinate", "note": "", "leftover": false}}}, {"day": "Sunday", "weekend": true, "meals": {"breakfast": {"name": "Weekend Morning Waffles", "satfat": 2.3, "cal": 373, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Succotash Salad with Lentils", "satfat": 2.0, "cal": 341, "time": "~45 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Grilled Beef Kebabs with Lemon and Rosemary Marinade", "satfat": 3.0, "cal": 310, "time": "~20 min +marinate", "note": "", "leftover": false}}}], "desserts": [{"name": "Honey-Glazed Peaches with Hazelnuts", "satfat": 0.5, "cal": 170, "time": "~15 min", "note": "uses your peaches", "leftover": false}, {"name": "Strawberries with Balsamic Vinegar", "satfat": 0.0, "cal": 100, "time": "~10 min", "note": "make ahead", "leftover": false}, {"name": "Greek Lemon Rice Pudding", "satfat": 2.5, "cal": 220, "time": "~40 min +chill", "note": "creamy", "leftover": false}]}, {"label": "Week 2 \u00b7 Summer", "days": [{"day": "Monday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Mediterranean Tuna Salad", "satfat": 0.5, "cal": 190, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Vindaloo-Style Potatoes", "satfat": 1.0, "cal": 340, "time": "~40 min", "note": "make double \u2192 Tue", "leftover": false}}}, {"day": "Tuesday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Vindaloo-Style Potatoes", "satfat": 1.0, "cal": 340, "time": "warm 5 min", "note": "make-ahead from Mon", "leftover": true}, "dinner": {"name": "Pan-Seared Pork Cutlets with Tomato Chutney", "satfat": 1.5, "cal": 230, "time": "~30 min", "note": "", "leftover": false}}}, {"day": "Wednesday", "weekend": false, "meals": {"breakfast": {"name": "Overnight Slow Cooker Steel Cut Oats with Banana", "satfat": 1.0, "cal": 190, "time": "5 min AM", "note": "", "leftover": false}, "lunch": {"name": "Cherry Tomato Salad with Feta and Olives", "satfat": 3.5, "cal": 130, "time": "~15 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Stewed Chickpeas and Spinach with Dill and Lemon", "satfat": 0.5, "cal": 180, "time": "~30 min", "note": "make double \u2192 Thu", "leftover": false}}}, {"day": "Thursday", "weekend": false, "meals": {"breakfast": {"name": "Granola Cups with Yogurt and Berries", "satfat": 1.0, "cal": 191, "time": "~10 min", "note": "", "leftover": false}, "lunch": {"name": "Stewed Chickpeas and Spinach with Dill and Lemon", "satfat": 0.5, "cal": 180, "time": "warm 5 min", "note": "make-ahead from Wed", "leftover": true}, "dinner": {"name": "Grilled Sea Bass with Citrus and Black Olive Salad", "satfat": 1.5, "cal": 240, "time": "~25 min", "note": "", "leftover": false}}}, {"day": "Friday", "weekend": false, "meals": {"breakfast": {"name": "Peanut Butter Banana Baked Oatmeal", "satfat": 2.0, "cal": 240, "time": "~40 min", "note": "", "leftover": false}, "lunch": {"name": "Barley Salad with Celery and Miso Dressing", "satfat": 0.5, "cal": 190, "time": "~20 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Arroz con Pollo", "satfat": 1.0, "cal": 330, "time": "~50 min", "note": "", "leftover": false}}}, {"day": "Saturday", "weekend": true, "meals": {"breakfast": {"name": "Spanish Tortilla with Roasted Red Peppers and Peas", "satfat": 4.0, "cal": 340, "time": "~35 min", "note": "uses potatoes", "leftover": false}, "lunch": {"name": "Sesame-Lemon Cucumber Salad", "satfat": 1.0, "cal": 100, "time": "~10 min", "note": "fresh", "leftover": false}, "dinner": {"name": "Jamaican Jerk Pork Tenderloin", "satfat": 2.0, "cal": 248, "time": "~30 min +marinate", "note": "", "leftover": false}}}, {"day": "Sunday", "weekend": true, "meals": {"breakfast": {"name": "Weekend Morning Waffles", "satfat": 2.3, "cal": 373, "time": "~25 min", "note": "", "leftover": false}, "lunch": {"name": "Ranch Salad with Red Potatoes & Smoky Chickpeas", "satfat": 1.2, "cal": 244, "time": "~25 min", "note": "fresh \u00b7 uses potatoes", "leftover": false}, "dinner": {"name": "Grilled Chicken Souvlaki", "satfat": 3.5, "cal": 460, "time": "~30 min +marinate", "note": "", "leftover": false}}}], "desserts": [{"name": "Roasted Pears with Dried Apricots and Pistachios", "satfat": 1.0, "cal": 290, "time": "~35 min", "note": "new", "leftover": false}, {"name": "Strawberries with Balsamic Vinegar", "satfat": 0.0, "cal": 100, "time": "~10 min", "note": "make ahead", "leftover": false}, {"name": "Greek Lemon Rice Pudding", "satfat": 2.5, "cal": 220, "time": "~40 min +chill", "note": "creamy", "leftover": false}]}]};
+let DATA = FALLBACK;
+const LS="chefclaude.eaten.v1", LSW="chefclaude.week.v1", LSR="chefclaude.requests.v1", LSP="chefclaude.pin.v1";
+let eaten={}; try{eaten=JSON.parse(localStorage.getItem(LS)||"{}");}catch(e){}
+let wk=0; try{wk=parseInt(localStorage.getItem(LSW)||"0",10)||0;}catch(e){}
+let req={target:"next",veg:[],protein:[],notes:""};
+try{const r=JSON.parse(localStorage.getItem(LSR)||"null");if(r)req=Object.assign(req,r);}catch(e){}
+let pin=""; try{pin=localStorage.getItem(LSP)||"";}catch(e){}
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(eaten));localStorage.setItem(LSW,String(wk));}catch(e){}};
+const saveReq=()=>{try{localStorage.setItem(LSR,JSON.stringify(req));}catch(e){}};
+const key=(w,di,slot)=>`${w}|${di}|${slot}`;
+const TAG={breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner"};
+const SLOTS=["breakfast","lunch","dinner"];
+const VEG=["Tomatoes","Spinach","Arugula","Cauliflower","Potatoes","Cucumber","Green beans","Corn","Onions","Zucchini","Eggplant","Peppers","Mushrooms","Broccoli","Asparagus","Kale","Swiss chard","Peaches"];
+const PROT=["Chicken","Turkey","Pork","Salmon","Tuna","White fish","Chickpeas / beans","Lentils","Tofu","Eggs","Beef (1×/mo)"];
+
+// Load latest data at runtime (published menus appear with no redeploy); fall back to inlined copy offline.
+async function loadData(){
+  try{
+    const r=await fetch("data/meals.json",{cache:"no-store"});
+    if(r.ok){const j=await r.json(); if(j&&Array.isArray(j.weeks)&&j.weeks.length){DATA=j;}}
+  }catch(e){/* offline / static-only: keep fallback */}
+  if(wk>=DATA.weeks.length) wk=0;
+  render();
+  pullState(); // bring in checkmarks from your other devices
+}
+function dayTotals(day){let sf=0,cal=0;SLOTS.forEach(s=>{sf+=day.meals[s].satfat;cal+=day.meals[s].cal;});return{sf,cal};}
+function render(){
+  const week=DATA.weeks[wk];
+  document.getElementById("subtitle").textContent=week.label;
+  const wb=document.getElementById("weekbar");wb.innerHTML="";
+  DATA.weeks.forEach((w,i)=>{const b=document.createElement("button");b.textContent=w.label.split(" · ")[0];
+    b.className=i===wk?"active":"";b.onclick=()=>{wk=i;save();render();window.scrollTo({top:0});};wb.appendChild(b);});
+  let wsf=0,wcal=0,ec=0,total=0;
+  week.days.forEach((d,di)=>{const t=dayTotals(d);wsf+=t.sf;wcal+=t.cal;SLOTS.forEach(s=>{total++;if(eaten[key(wk,di,s)])ec++;});});
+  const avgSf=(wsf/7).toFixed(1),avgCal=Math.round(wcal/7);
+  document.getElementById("summary").innerHTML=
+    `<div class="stat"><div class="k">Avg sat fat / day</div><div class="v">${avgSf}<small> g</small></div>
+       <div class="progress"><i style="width:${Math.min(100,avgSf/13*100)}%;background:${avgSf<=13?'var(--good)':'#c0504d'}"></i></div></div>
+     <div class="stat"><div class="k">Avg calories / day</div><div class="v">${avgCal}<small> kcal (meals)</small></div></div>`;
+  document.getElementById("eatenline").innerHTML=`<b>${ec}</b> / ${total} meals eaten this week`;
+  const main=document.getElementById("main");main.innerHTML="";
+  week.days.forEach((d,di)=>{
+    const t=dayTotals(d);
+    const h=document.createElement("h2");h.className="day";
+    h.innerHTML=`${d.day}${d.weekend?' · weekend':''}<span class="tot">day: <b>${t.sf.toFixed(1)} g</b> sat · ${t.cal} kcal</span>`;
+    main.appendChild(h);
+    const card=document.createElement("div");card.className="day-card"+(d.weekend?" weekend":"");
+    SLOTS.forEach(s=>{const m=d.meals[s],k=key(wk,di,s),on=!!eaten[k];
+      const el=document.createElement("div");el.className="meal"+(on?" eaten":"");
+      el.innerHTML=`<div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="mbody"><div class="mtag">${TAG[s]}${m.leftover?'<span class="lo-badge">make-ahead</span>':''}</div>
+        <div class="mname">${m.name}</div>
+        <div class="mmeta"><span class="chip lo">${m.satfat.toFixed(1)} g sat</span><span class="chip">${m.cal} kcal</span>${m.time?`<span class="chip time">${m.time}</span>`:''}</div>
+        ${m.note?`<div class="note">${m.note}</div>`:''}</div>`;
+      el.onclick=()=>{toggleEaten(k);};
+      card.appendChild(el);});
+    main.appendChild(card);
+  });
+  if(week.desserts&&week.desserts.length){
+    const wrap=document.createElement("div");wrap.className="desserts";
+    const h=document.createElement("h2");h.className="day";h.innerHTML=`Desserts <span class="tot">slot into any day</span>`;
+    wrap.appendChild(h);
+    const card=document.createElement("div");card.className="day-card";
+    week.desserts.forEach(m=>{const el=document.createElement("div");el.className="meal";
+      el.innerHTML=`<div class="mbody"><div class="mtag">Dessert</div><div class="mname">${m.name}</div>
+        <div class="mmeta"><span class="chip lo">${m.satfat.toFixed(1)} g sat</span><span class="chip">${m.cal} kcal</span>${m.time?`<span class="chip time">${m.time}</span>`:''}</div>
+        ${m.note?`<div class="note">${m.note}</div>`:''}</div>`;
+      card.appendChild(el);});
+    wrap.appendChild(card);main.appendChild(wrap);
+  }
+}
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("Clear all 'eaten' checkmarks for "+DATA.weeks[wk].label+"?")) clearWeekEaten();};
+
+/* ---- sheet helpers ---- */
+function openSheet(sheet,bg){bg.classList.add("open");sheet.classList.add("open");}
+function closeSheet(sheet,bg){sheet.classList.remove("open");bg.classList.remove("open");}
+const reqSheet=document.getElementById("reqSheet"),reqBg=document.getElementById("reqBg");
+const setSheet=document.getElementById("setSheet"),setBg=document.getElementById("setBg");
+document.getElementById("reqOpen").onclick=()=>{buildReq();openSheet(reqSheet,reqBg);};
+document.getElementById("reqClose").onclick=()=>closeSheet(reqSheet,reqBg);
+reqBg.onclick=()=>closeSheet(reqSheet,reqBg);
+document.getElementById("setOpen").onclick=()=>{document.getElementById("pinInput").value=pin;openSheet(setSheet,setBg);};
+document.getElementById("setClose").onclick=()=>closeSheet(setSheet,setBg);
+setBg.onclick=()=>closeSheet(setSheet,setBg);
+document.getElementById("pinInput").addEventListener("input",e=>{pin=e.target.value;try{localStorage.setItem(LSP,pin);}catch(_){}pullState();});
+
+/* ---- cross-device sync of "eaten" checkmarks (via api/state) ---- */
+const SYNC_URL="api/state";
+let pendSet={},pendUnset=[],pushTimer=null,pulling=false;
+const syncOn=()=>!!pin;
+function queuePush(){if(!syncOn())return;if(pushTimer)clearTimeout(pushTimer);pushTimer=setTimeout(flushPush,1200);}
+async function flushPush(){pushTimer=null;if(!syncOn())return;
+  const set=pendSet,unset=pendUnset;pendSet={};pendUnset=[];
+  if(!Object.keys(set).length&&!unset.length)return;
+  try{const r=await fetch(SYNC_URL,{method:"POST",headers:{"Content-Type":"application/json","x-publish-secret":pin},body:JSON.stringify({set,unset})});
+    if(!r.ok)throw 0;}
+  catch(e){Object.assign(pendSet,set);pendUnset=pendUnset.concat(unset);} // keep pending; retry on next change/pull
+}
+function toggleEaten(k){
+  if(!eaten[k]){eaten[k]=true;pendSet[k]=true;const i=pendUnset.indexOf(k);if(i>=0)pendUnset.splice(i,1);}
+  else{delete eaten[k];pendUnset.push(k);delete pendSet[k];}
+  save();render();queuePush();
+}
+function clearWeekEaten(){const removed=[];
+  DATA.weeks[wk].days.forEach((d,di)=>SLOTS.forEach(s=>{const k=key(wk,di,s);if(eaten[k])delete eaten[k];removed.push(k);}));
+  save();render();
+  if(syncOn()){removed.forEach(k=>{pendUnset.push(k);delete pendSet[k];});queuePush();}
+}
+async function pullState(){if(!syncOn()||pulling)return;pulling=true;
+  try{const r=await fetch(SYNC_URL,{method:"GET",headers:{"x-publish-secret":pin},cache:"no-store"});
+    if(r.ok){const s=await r.json();const remote=(s&&s.eaten&&typeof s.eaten==="object")?s.eaten:{};
+      const localKeys=Object.keys(eaten);
+      if(!Object.keys(remote).length&&localKeys.length&&!Object.keys(pendSet).length&&!pendUnset.length){
+        localKeys.forEach(k=>pendSet[k]=true);queuePush(); // remote empty: seed it from this device instead of wiping
+      }else{
+        eaten=remote;for(const k in pendSet)eaten[k]=true;for(const k of pendUnset)delete eaten[k]; // local intent wins until confirmed
+        save();render();
+      }
+    }
+  }catch(e){/* offline: keep local */}finally{pulling=false;}
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pullState();});
+setInterval(()=>{if(document.visibilityState==="visible")pullState();},30000);
+
+/* ---- requests ---- */
+function chipRow(elId,list,arr){const box=document.getElementById(elId);box.innerHTML="";
+  list.forEach(name=>{const b=document.createElement("button");const val=name.replace(" (1×/mo)","");
+    b.className="tog"+(arr.includes(val)?" on":"");b.textContent=name;
+    b.onclick=()=>{const i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else arr.push(val);saveReq();b.classList.toggle("on");};
+    box.appendChild(b);});}
+function buildReq(){document.querySelectorAll("#targetSeg button").forEach(b=>b.classList.toggle("active",b.dataset.t===req.target));
+  chipRow("vegChips",VEG,req.veg);chipRow("protChips",PROT,req.protein);document.getElementById("reqNote").value=req.notes||"";}
+document.querySelectorAll("#targetSeg button").forEach(b=>b.onclick=()=>{req.target=b.dataset.t;saveReq();
+  document.querySelectorAll("#targetSeg button").forEach(x=>x.classList.toggle("active",x===b));});
+document.getElementById("reqNote").addEventListener("input",e=>{req.notes=e.target.value;saveReq();});
+function reqText(){const tgt=req.target==="week2"?"update Week 2":"the next new week";let o=`Chef Claude — requests for ${tgt}:\n`;
+  if(req.veg.length)o+=`• Vegetables: ${req.veg.join(", ")}\n`;if(req.protein.length)o+=`• Proteins: ${req.protein.join(", ")}\n`;
+  if(req.notes.trim())o+=`• Notes: ${req.notes.trim()}\n`;if(!req.veg.length&&!req.protein.length&&!req.notes.trim())o+="• (nothing selected yet)\n";
+  o+="(Rules: ≤10 g sat fat/day, no shellfish/lamb, fish not as leftovers, beef ≤ once a month.)";return o;}
+async function copyFallback(msg){const txt=reqText();const st=document.getElementById("reqStatus");
+  try{await navigator.clipboard.writeText(txt);st.className="status ok";st.textContent=(msg||"")+"Copied — paste it into your chat with Chef Claude ✓";}
+  catch(e){const p=document.getElementById("reqPreview");p.style.display="block";p.textContent=txt;st.className="status";st.textContent=(msg||"")+"Select the text below and copy:";}}
+document.getElementById("sendBtn").onclick=async()=>{
+  const st=document.getElementById("reqStatus");st.className="status";st.textContent="Sending…";
+  document.getElementById("reqPreview").style.display="none";
+  try{
+    const r=await fetch("api/requests",{method:"POST",headers:{"Content-Type":"application/json","x-publish-secret":pin},
+      body:JSON.stringify({target:req.target,veg:req.veg,protein:req.protein,notes:req.notes})});
+    if(r.ok){st.className="status ok";st.textContent="Sent to Chef Claude ✓ — we'll use it when we next plan.";}
+    else if(r.status===401){st.className="status err";st.textContent="PIN missing/incorrect — set it under ⚙, or copy instead.";await copyFallback("");}
+    else{const d=await r.json().catch(()=>({}));st.className="status err";st.textContent="Couldn't send ("+(d.error||r.status)+"). Copied instead.";await copyFallback("");}
+  }catch(e){await copyFallback("Backend not reachable — ");}
+};
+document.getElementById("clearReq").onclick=()=>{req.veg=[];req.protein=[];req.notes="";saveReq();buildReq();
+  document.getElementById("reqStatus").textContent="";document.getElementById("reqPreview").style.display="none";};
+
+/* ---- publish ---- */
+document.getElementById("publishBtn").onclick=async()=>{
+  const st=document.getElementById("setStatus");st.className="status";st.textContent="Publishing…";
+  let payload;
+  try{payload=JSON.parse(document.getElementById("publishBox").value);}
+  catch(e){st.className="status err";st.textContent="That isn't valid JSON.";return;}
+  try{
+    const r=await fetch("api/publish",{method:"POST",headers:{"Content-Type":"application/json","x-publish-secret":pin},body:JSON.stringify(payload)});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){st.className="status ok";st.textContent="Published ✓ Your site will update in ~a minute.";}
+    else if(r.status===401){st.className="status err";st.textContent="PIN missing/incorrect — check ⚙ settings.";}
+    else{st.className="status err";st.textContent="Rejected: "+(d.error||r.status);}
+  }catch(e){st.className="status err";st.textContent="Backend not reachable (is it deployed yet?).";}
+};
+
+loadData();
+
+// PWA: register the service worker so the app installs to the home screen and works offline.
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});
+}
+</script>
+</body>
+</html>

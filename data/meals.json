@@ -1,0 +1,492 @@
+{
+  "title": "Chef Claude \u00b7 Meal Plan",
+  "chef": "Chef Claude",
+  "targets": {
+    "satfatMealsMax": 10,
+    "satfatDailyCeiling": 13
+  },
+  "weeks": [
+    {
+      "label": "Week 1 \u00b7 Summer",
+      "days": [
+        {
+          "day": "Monday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Granola Cups with Yogurt and Berries",
+              "satfat": 1.0,
+              "cal": 191,
+              "time": "~10 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Tomato Salad with Tuna, Capers, and Black Olives",
+              "satfat": 1.5,
+              "cal": 160,
+              "time": "~10 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Orzo Salad with Arugula and Sun-Dried Tomatoes",
+              "satfat": 2.5,
+              "cal": 320,
+              "time": "~25 min",
+              "note": "make double \u2192 Tue",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Tuesday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
+              "satfat": 1.0,
+              "cal": 190,
+              "time": "5 min AM",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Orzo Salad with Arugula and Sun-Dried Tomatoes",
+              "satfat": 2.5,
+              "cal": 320,
+              "time": "serve cold",
+              "note": "make-ahead from Mon",
+              "leftover": true
+            },
+            "dinner": {
+              "name": "Chicken Cacciatore",
+              "satfat": 2.0,
+              "cal": 310,
+              "time": "~50 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Wednesday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Peanut Butter Banana Baked Oatmeal",
+              "satfat": 2.0,
+              "cal": 240,
+              "time": "~40 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Nectarine-and-Chickpea Couscous Salad with Honey-Cumin Dressing",
+              "satfat": 0.5,
+              "cal": 213,
+              "time": "~15 min",
+              "note": "fresh \u00b7 use peaches",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Bulgur with Chickpeas, Spinach, and Za'atar",
+              "satfat": 1.0,
+              "cal": 200,
+              "time": "~30 min",
+              "note": "make double \u2192 Thu",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Thursday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
+              "satfat": 1.0,
+              "cal": 190,
+              "time": "5 min AM",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Bulgur with Chickpeas, Spinach, and Za'atar",
+              "satfat": 1.0,
+              "cal": 200,
+              "time": "warm 5 min",
+              "note": "make-ahead from Wed",
+              "leftover": true
+            },
+            "dinner": {
+              "name": "Spice-Roasted Salmon with Roasted Cauliflower",
+              "satfat": 2.0,
+              "cal": 270,
+              "time": "~30 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Friday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Granola Cups with Yogurt and Berries",
+              "satfat": 1.0,
+              "cal": 191,
+              "time": "~10 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Green Bean Salad with Cilantro Sauce",
+              "satfat": 2.0,
+              "cal": 190,
+              "time": "~20 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Grilled Tuna Steaks with Romesco",
+              "satfat": 2.5,
+              "cal": 310,
+              "time": "~25 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Saturday",
+          "weekend": true,
+          "meals": {
+            "breakfast": {
+              "name": "Fresh Corn Frittata & Smoked Mozzarella",
+              "satfat": 1.9,
+              "cal": 129,
+              "time": "~25 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Fattoosh Mixed Herb and Toasted Pita Salad",
+              "satfat": 0.6,
+              "cal": 169,
+              "time": "~15 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Chicken Marbella",
+              "satfat": 3.0,
+              "cal": 339,
+              "time": "~90 min +marinate",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Sunday",
+          "weekend": true,
+          "meals": {
+            "breakfast": {
+              "name": "Weekend Morning Waffles",
+              "satfat": 2.3,
+              "cal": 373,
+              "time": "~25 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Succotash Salad with Lentils",
+              "satfat": 2.0,
+              "cal": 341,
+              "time": "~45 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Grilled Beef Kebabs with Lemon and Rosemary Marinade",
+              "satfat": 3.0,
+              "cal": 310,
+              "time": "~20 min +marinate",
+              "note": "",
+              "leftover": false
+            }
+          }
+        }
+      ],
+      "desserts": [
+        {
+          "name": "Honey-Glazed Peaches with Hazelnuts",
+          "satfat": 0.5,
+          "cal": 170,
+          "time": "~15 min",
+          "note": "uses your peaches",
+          "leftover": false
+        },
+        {
+          "name": "Strawberries with Balsamic Vinegar",
+          "satfat": 0.0,
+          "cal": 100,
+          "time": "~10 min",
+          "note": "make ahead",
+          "leftover": false
+        },
+        {
+          "name": "Greek Lemon Rice Pudding",
+          "satfat": 2.5,
+          "cal": 220,
+          "time": "~40 min +chill",
+          "note": "creamy",
+          "leftover": false
+        }
+      ]
+    },
+    {
+      "label": "Week 2 \u00b7 Summer",
+      "days": [
+        {
+          "day": "Monday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Peanut Butter Banana Baked Oatmeal",
+              "satfat": 2.0,
+              "cal": 240,
+              "time": "~40 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Mediterranean Tuna Salad",
+              "satfat": 0.5,
+              "cal": 190,
+              "time": "~10 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Vindaloo-Style Potatoes",
+              "satfat": 1.0,
+              "cal": 340,
+              "time": "~40 min",
+              "note": "make double \u2192 Tue",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Tuesday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Granola Cups with Yogurt and Berries",
+              "satfat": 1.0,
+              "cal": 191,
+              "time": "~10 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Vindaloo-Style Potatoes",
+              "satfat": 1.0,
+              "cal": 340,
+              "time": "warm 5 min",
+              "note": "make-ahead from Mon",
+              "leftover": true
+            },
+            "dinner": {
+              "name": "Pan-Seared Pork Cutlets with Tomato Chutney",
+              "satfat": 1.5,
+              "cal": 230,
+              "time": "~30 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Wednesday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Overnight Slow Cooker Steel Cut Oats with Banana",
+              "satfat": 1.0,
+              "cal": 190,
+              "time": "5 min AM",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Cherry Tomato Salad with Feta and Olives",
+              "satfat": 3.5,
+              "cal": 130,
+              "time": "~15 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Stewed Chickpeas and Spinach with Dill and Lemon",
+              "satfat": 0.5,
+              "cal": 180,
+              "time": "~30 min",
+              "note": "make double \u2192 Thu",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Thursday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Granola Cups with Yogurt and Berries",
+              "satfat": 1.0,
+              "cal": 191,
+              "time": "~10 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Stewed Chickpeas and Spinach with Dill and Lemon",
+              "satfat": 0.5,
+              "cal": 180,
+              "time": "warm 5 min",
+              "note": "make-ahead from Wed",
+              "leftover": true
+            },
+            "dinner": {
+              "name": "Grilled Sea Bass with Citrus and Black Olive Salad",
+              "satfat": 1.5,
+              "cal": 240,
+              "time": "~25 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Friday",
+          "weekend": false,
+          "meals": {
+            "breakfast": {
+              "name": "Peanut Butter Banana Baked Oatmeal",
+              "satfat": 2.0,
+              "cal": 240,
+              "time": "~40 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Barley Salad with Celery and Miso Dressing",
+              "satfat": 0.5,
+              "cal": 190,
+              "time": "~20 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Arroz con Pollo",
+              "satfat": 1.0,
+              "cal": 330,
+              "time": "~50 min",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Saturday",
+          "weekend": true,
+          "meals": {
+            "breakfast": {
+              "name": "Spanish Tortilla with Roasted Red Peppers and Peas",
+              "satfat": 4.0,
+              "cal": 340,
+              "time": "~35 min",
+              "note": "uses potatoes",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Sesame-Lemon Cucumber Salad",
+              "satfat": 1.0,
+              "cal": 100,
+              "time": "~10 min",
+              "note": "fresh",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Jamaican Jerk Pork Tenderloin",
+              "satfat": 2.0,
+              "cal": 248,
+              "time": "~30 min +marinate",
+              "note": "",
+              "leftover": false
+            }
+          }
+        },
+        {
+          "day": "Sunday",
+          "weekend": true,
+          "meals": {
+            "breakfast": {
+              "name": "Weekend Morning Waffles",
+              "satfat": 2.3,
+              "cal": 373,
+              "time": "~25 min",
+              "note": "",
+              "leftover": false
+            },
+            "lunch": {
+              "name": "Ranch Salad with Red Potatoes & Smoky Chickpeas",
+              "satfat": 1.2,
+              "cal": 244,
+              "time": "~25 min",
+              "note": "fresh \u00b7 uses potatoes",
+              "leftover": false
+            },
+            "dinner": {
+              "name": "Grilled Chicken Souvlaki",
+              "satfat": 3.5,
+              "cal": 460,
+              "time": "~30 min +marinate",
+              "note": "",
+              "leftover": false
+            }
+          }
+        }
+      ],
+      "desserts": [
+        {
+          "name": "Roasted Pears with Dried Apricots and Pistachios",
+          "satfat": 1.0,
+          "cal": 290,
+          "time": "~35 min",
+          "note": "new",
+          "leftover": false
+        },
+        {
+          "name": "Strawberries with Balsamic Vinegar",
+          "satfat": 0.0,
+          "cal": 100,
+          "time": "~10 min",
+          "note": "make ahead",
+          "leftover": false
+        },
+        {
+          "name": "Greek Lemon Rice Pudding",
+          "satfat": 2.5,
+          "cal": 220,
+          "time": "~40 min +chill",
+          "note": "creamy",
+          "leftover": false
+        }
+      ]
+    }
+  ]
+}

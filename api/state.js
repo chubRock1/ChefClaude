@@ -1,0 +1,55 @@
+// /api/state — cross-device sync for the "eaten" checkmarks (and week selection).
+//   GET  /api/state            -> returns the shared state map { eaten:{key:true}, week:0 }
+//   POST /api/state {set,unset,week} -> merges the change into data/state.json and returns the map
+// Reads/writes go straight to GitHub, so a mark on one device shows on another within seconds
+// (the app reads through this route, not the redeployed static file). PIN-gated like the others.
+
+const { readJson, writeJson } = require("./_github");
+
+const PATH = "data/state.json";
+
+function normalize(j) {
+  const s = j && typeof j === "object" ? j : {};
+  return { eaten: (s.eaten && typeof s.eaten === "object") ? s.eaten : {}, week: Number.isInteger(s.week) ? s.week : 0 };
+}
+
+module.exports = async (req, res) => {
+  if ((req.headers["x-publish-secret"] || "") !== process.env.PUBLISH_SECRET) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+
+  try {
+    if (req.method === "GET") {
+      const cur = await readJson(PATH);
+      return res.status(200).json(normalize(cur.json));
+    }
+
+    if (req.method === "POST") {
+      let body = req.body;
+      if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { return res.status(400).json({ error: "bad json" }); } }
+      const set = (body && body.set && typeof body.set === "object") ? body.set : {};
+      const unset = Array.isArray(body && body.unset) ? body.unset : [];
+      const week = Number.isInteger(body && body.week) ? body.week : null;
+
+      // Read-modify-write with one retry if another device committed in between (sha conflict).
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const cur = await readJson(PATH);
+        const state = normalize(cur.json);
+        for (const k of Object.keys(set)) { if (set[k]) state.eaten[k] = true; else delete state.eaten[k]; }
+        for (const k of unset) delete state.eaten[k];
+        if (week !== null) state.week = week;
+        try {
+          await writeJson(PATH, state, cur.sha, "Sync meal state");
+          return res.status(200).json(state);
+        } catch (e) {
+          if (attempt === 0 && /\b409\b/.test(String(e && e.message))) continue; // conflict: re-read and retry
+          throw e;
+        }
+      }
+    }
+
+    return res.status(405).json({ error: "GET or POST only" });
+  } catch (e) {
+    return res.status(500).json({ error: String((e && e.message) || e) });
+  }
+};

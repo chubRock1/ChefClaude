@@ -1,0 +1,10 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+
+# Local env / tooling (secrets live in Vercel, never in the repo)
+.env
+.env.*
+.vercel/
+node_modules/
