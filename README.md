@@ -106,6 +106,8 @@ Chef Claude reads requests without pasting from the public raw URL each planning
   lunches per week, and beef at most once a month.
 
 ## Done since the original package
+- Header **↻ refresh** button: re-fetches the menu + synced state in place (no reopen) — shows a
+  spinner, then "New week loaded ✓" if the menu changed or "You're up to date" if not.
 - PWA: `manifest.webmanifest` + `sw.js` + generated icons — installable, offline app shell.
 - Cross-device sync of eaten / ratings / swaps / carry via `data/state.json` + `api/state.js`.
 - Per-meal 📋 copy, 👍/👎 rating, ⏭ carry-to-next-week, ⇄ swap; desserts checkable + copy/rate/carry.
