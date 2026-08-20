@@ -1,1 +1,9 @@
-{ "eaten": {}, "week": 0, "ratings": {}, "swaps": {}, "carry": {} }
+{
+  "eaten": {
+    "vxjpra|0|D|0": true
+  },
+  "week": 0,
+  "ratings": {},
+  "swaps": {},
+  "carry": {}
+}
