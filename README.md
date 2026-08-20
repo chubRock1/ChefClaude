@@ -26,6 +26,12 @@ app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — k
 applies wherever that dish appears), and **⇄ swap** (flag this specific slot in the current menu to
 be replaced). Desserts get copy + rating (no swap). All of it syncs across devices.
 
+## Checkmarks reset automatically on a new menu
+Eaten checkmarks are scoped to the specific published menu (keyed by a signature of its meal
+names). Publishing a genuinely new menu starts everyone with a clean slate — no manual reset
+needed. Re-publishing the exact same menu keeps your progress. The "Reset week" button still
+exists for clearing the current week's checkmarks mid-week if you want to re-track.
+
 ## Cross-device sync (checkmarks, ratings, swaps)
 Marking a meal eaten / rating it / flagging a swap on one device shows up on the others within a
 few seconds. The app reads state *live through `/api/state`* (not the redeployed static file), so

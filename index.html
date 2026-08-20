@@ -153,6 +153,7 @@ const LS="chefclaude.eaten.v1", LSW="chefclaude.week.v1", LSR="chefclaude.reques
 let eaten={}; try{eaten=JSON.parse(localStorage.getItem(LS)||"{}");}catch(e){}
 let ratings={}; try{ratings=JSON.parse(localStorage.getItem(LSRT)||"{}");}catch(e){}
 let swaps={}; try{swaps=JSON.parse(localStorage.getItem(LSSW)||"{}");}catch(e){}
+let menuSig=""; // identity of the currently-loaded menu; eaten checkmarks are scoped to it
 let wk=0; try{wk=parseInt(localStorage.getItem(LSW)||"0",10)||0;}catch(e){}
 let req={target:"next",veg:[],protein:[],notes:""};
 try{const r=JSON.parse(localStorage.getItem(LSR)||"null");if(r)req=Object.assign(req,r);}catch(e){}
@@ -161,7 +162,10 @@ const save=()=>{try{localStorage.setItem(LS,JSON.stringify(eaten));localStorage.
   localStorage.setItem(LSRT,JSON.stringify(ratings));localStorage.setItem(LSSW,JSON.stringify(swaps));}catch(e){}};
 const swapKey=(label,day,slot)=>`${label}||${day}||${slot}`;
 const saveReq=()=>{try{localStorage.setItem(LSR,JSON.stringify(req));}catch(e){}};
-const key=(w,di,slot)=>`${w}|${di}|${slot}`;
+// Eaten keys are prefixed with the menu signature, so publishing a new menu starts fresh automatically.
+const key=(w,di,slot)=>`${menuSig}|${w}|${di}|${slot}`;
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return (h>>>0).toString(36);}
+function computeSig(d){try{return hashStr((d.weeks||[]).map(w=>w.label+"~"+(w.days||[]).map(day=>SLOTS.map(s=>day.meals[s].name).join("^")).join("|")).join("#"));}catch(e){return "";}}
 const TAG={breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner"};
 const SLOTS=["breakfast","lunch","dinner"];
 const VEG=["Tomatoes","Spinach","Arugula","Cauliflower","Potatoes","Cucumber","Green beans","Corn","Onions","Zucchini","Eggplant","Peppers","Mushrooms","Broccoli","Asparagus","Kale","Swiss chard","Peaches"];
@@ -174,6 +178,7 @@ async function loadData(){
     if(r.ok){const j=await r.json(); if(j&&Array.isArray(j.weeks)&&j.weeks.length){DATA=j;}}
   }catch(e){/* offline / static-only: keep fallback */}
   if(wk>=DATA.weeks.length) wk=0;
+  menuSig=computeSig(DATA); // checkmarks are scoped to this menu; a new published menu = a clean slate
   render();
   pullState(); // bring in checkmarks from your other devices
 }
