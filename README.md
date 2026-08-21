@@ -72,7 +72,9 @@ assemble a day from meals anywhere in the menu (great with the By-course view) a
 what's on deck, even when the dish isn't from that calendar day. **Eaten** (tap the row, or its
 check) marks it actually eaten (strike-through). They're independent: a meal can be planned, eaten,
 or both. Planned flags are `menuSig`-scoped like eaten, so publishing a new menu clears them
-automatically. Both sync across devices.
+automatically. Both sync across devices. When at least one meal is planned, the footer shows a green
+**Planned: N meals · X g sat · Y kcal** line — the running sat-fat + calorie total of everything
+you've picked, so a day assembled across the menu shows its custom totals at a glance.
 
 ## Per-meal actions (copy / rate / carry / swap)
 Every meal row also has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe

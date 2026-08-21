@@ -90,6 +90,8 @@
   footer .row{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
   .reset{border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;font-size:13px;padding:11px 12px;border-radius:11px;cursor:pointer}
   .eatenline{flex:1;font-size:12.5px;color:var(--muted)}.eatenline b{color:var(--ink)}
+  .plannedline{max-width:640px;margin:0 auto 8px;font-size:12.5px;color:var(--good);font-weight:600;display:none}
+  .plannedline.show{display:block}.plannedline b{font-weight:800}
   .hint{text-align:center;color:var(--muted);font-size:11.5px;margin:14px 4px 0}
   .sheet-bg{position:fixed;inset:0;background:rgba(40,30,20,.4);z-index:40;opacity:0;pointer-events:none;transition:.2s}
   .sheet-bg.open{opacity:1;pointer-events:auto}
@@ -132,7 +134,7 @@
   <main id="main"></main>
   <p class="hint" id="dataHint">Tap a meal to mark it eaten. Progress saves on this device.</p>
 </div>
-<footer><div class="row"><span class="eatenline" id="eatenline"></span><button class="reset" id="resetBtn">Reset week</button></div></footer>
+<footer><div class="plannedline" id="plannedline"></div><div class="row"><span class="eatenline" id="eatenline"></span><button class="reset" id="resetBtn">Reset week</button></div></footer>
 <div class="toast" id="toast"></div>
 
 <!-- Requests sheet -->
@@ -257,11 +259,16 @@ function render(){
     b.className=i===wk?"active":"";b.onclick=()=>{wk=i;save();render();window.scrollTo({top:0});};wb.appendChild(b);});
   document.querySelectorAll("#viewseg button").forEach(b=>b.classList.toggle("active",b.dataset.v===viewMode));
   let ec=0,total=0; // counter tracks everything checkable this week: day meals + desserts + extras
-  week.days.forEach((d,di)=>SLOTS.forEach(s=>{total++;if(eaten[key(wk,di,s)])ec++;}));
-  if(week.desserts) week.desserts.forEach((m,i)=>{total++;if(eaten[key(wk,"D",i)])ec++;});
+  let pc=0,psf=0,pcal=0; // planned tally: count + summed sat fat / calories for the meals you've picked
+  const tally=(m,k)=>{if(planned[k]&&m){pc++;psf+=(+m.satfat||0);pcal+=(+m.cal||0);}};
+  week.days.forEach((d,di)=>SLOTS.forEach(s=>{total++;const k=key(wk,di,s);if(eaten[k])ec++;tally(d.meals[s],k);}));
+  if(week.desserts) week.desserts.forEach((m,i)=>{total++;const k=key(wk,"D",i);if(eaten[k])ec++;tally(m,k);});
   if(week.extras&&typeof week.extras==="object") ["breakfast","lunch","dinner","dessert"].forEach(s=>{
-    if(week.extras[s]&&week.extras[s].name){total++;if(eaten[key(wk,"X",s)])ec++;}});
+    if(week.extras[s]&&week.extras[s].name){total++;const k=key(wk,"X",s);if(eaten[k])ec++;tally(week.extras[s],k);}});
   document.getElementById("eatenline").innerHTML=`<b>${ec}</b> / ${total} eaten this week`;
+  const pl=document.getElementById("plannedline");
+  if(pc){pl.classList.add("show");pl.innerHTML=`Planned: <b>${pc}</b> ${pc===1?"meal":"meals"} · <b>${psf.toFixed(1)} g</b> sat · <b>${Math.round(pcal).toLocaleString()}</b> kcal`;}
+  else{pl.classList.remove("show");pl.innerHTML="";}
   const main=document.getElementById("main");main.innerHTML="";
 
   if(viewMode==="course"){
