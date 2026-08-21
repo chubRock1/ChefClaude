@@ -1,6 +1,7 @@
 {
   "eaten": {
-    "vxjpra|0|D|0": true
+    "vxjpra|0|D|0": true,
+    "6tk9up|0|D|0": true
   },
   "week": 0,
   "ratings": {},
@@ -8,7 +9,7 @@
   "carry": {},
   "eatenLog": {
     "Honey-Glazed Peaches with Hazelnuts": {
-      "at": "2026-08-20T14:24:29.704Z",
+      "at": "2026-08-21T00:02:06.389Z",
       "week": "Week 1 · Summer"
     }
   }
