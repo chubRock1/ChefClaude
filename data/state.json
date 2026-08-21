@@ -2,7 +2,8 @@
   "eaten": {
     "vxjpra|0|D|0": true,
     "6tk9up|0|D|0": true,
-    "6tk9up|0|0|lunch": true
+    "6tk9up|0|0|lunch": true,
+    "6tk9up|0|5|dinner": true
   },
   "planned": {},
   "week": 0,
@@ -20,6 +21,10 @@
     },
     "Tomato Salad with Tuna, Capers, and Black Olives": {
       "at": "2026-08-21T16:12:17.288Z",
+      "week": "Week 1 · Summer"
+    },
+    "Chicken Marbella": {
+      "at": "2026-08-21T21:21:39.963Z",
       "week": "Week 1 · Summer"
     }
   }
