@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <style>
   :root{--bg:#faf7f3;--card:#fff;--ink:#2b2622;--muted:#8a8078;--accent:#d24400;--accent2:#c0504d;
-    --line:#ece5dd;--good:#4c8a3f;--weekend:#f0f5ea;--eaten:#eef6ea;--pill:#f4ede4;
+    --line:#ece5dd;--good:#4c8a3f;--weekend:#f0f5ea;--eaten:#eeeae4;--eatendot:#9a9088;--pill:#f4ede4;
     --shadow:0 1px 3px rgba(60,40,20,.08),0 6px 16px rgba(60,40,20,.05);}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);
@@ -56,7 +56,7 @@
   .tickwrap{display:flex;flex-direction:column;align-items:center;gap:3px;width:30px}
   .ticklbl{font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   .check{flex:0 0 24px;width:24px;height:24px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff;cursor:pointer}
-  .meal.eaten .check{background:var(--good);border-color:var(--good)}
+  .meal.eaten .check{background:var(--eatendot);border-color:var(--eatendot)}
   .check svg{width:13px;height:13px;opacity:0;transform:scale(.6);transition:.15s}.meal.eaten .check svg{opacity:1;transform:scale(1)}
   .plantick{flex:0 0 24px;width:24px;height:24px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff;cursor:pointer;font-size:12px;line-height:1;color:transparent}
   .meal.planned .plantick{background:var(--good);border-color:var(--good);color:#fff}
