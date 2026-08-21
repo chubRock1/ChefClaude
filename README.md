@@ -66,7 +66,8 @@ Handy when you mix and match — e.g. one day's breakfast with another day's lun
 Extra options section show in both views. The choice is remembered per device.
 
 ## Planned vs. Eaten (two ticks per row)
-Every meal row has **two ticks** on the left, labeled **Plan** and **Eaten**. **Plan** flags a meal
+Every meal row has **two ticks** on the left, stacked vertically — **Plan** on top, **Eaten** below,
+with spacing between them so they're easy to tap apart. **Plan** flags a meal
 as chosen for the week and highlights the whole row green (with a "planned" badge) — so you can
 assemble a day from meals anywhere in the menu (great with the By-course view) and see at a glance
 what's on deck, even when the dish isn't from that calendar day. **Eaten** (tap the row, or its
