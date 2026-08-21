@@ -105,6 +105,16 @@ swaps / carry post immediately and adopt the server's merged result; all merges 
 sha-conflict retry. Everything degrades to per-device localStorage when offline or before the PIN
 is set.
 
+**Sync is PIN-gated, and a header pill shows its state.** A device only pushes/pulls when its PIN
+is entered (`syncOn = !!pin`). The header shows **✓ Synced** when it is and **⚠ Not syncing** when
+it isn't (tap the pill to open Settings). This matters because iOS evicts a PWA's `localStorage`
+after ~7 idle days, which silently wipes the stored PIN and turns sync off — the pill makes that
+visible instead of leaving you wondering why checkmarks stopped crossing over. The app also calls
+`navigator.storage.persist()` to reduce that eviction (installed-to-home-screen PWAs benefit most).
+When a PIN is (re)entered, the device **merges its local-only checkmarks/ratings/flags up** to the
+server before adopting server state, so marks made while it wasn't syncing aren't lost (additive —
+it never deletes another device's marks). **If a device stops syncing, re-enter its PIN in Settings.**
+
 **Chef Claude reads these at planning time** from `data/state.json` — ratings tell it what to keep
 or avoid, swaps tell it which current-menu slots to replace, carry tells it which meals to pull into
 the upcoming week, and eatenLog tells it what was actually eaten (so un-eaten dishes return sooner).
