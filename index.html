@@ -27,6 +27,9 @@
   .title .spacer{flex:1}
   .iconbtn{border:1px solid var(--line);background:#fff;color:var(--accent);font-weight:700;font-size:12px;padding:7px 11px;border-radius:20px;cursor:pointer}
   .iconbtn.gear{padding:7px 10px}
+  .syncpill{font:600 11px/1 system-ui;border:1px solid transparent;border-radius:999px;padding:5px 9px;cursor:pointer;white-space:nowrap}
+  .syncpill.off{background:#fce8c8;color:#8a5a00;border-color:#f0c778}
+  .syncpill.on{background:#e5f5ea;color:#1a7a3c;border-color:#bfe6cc}
   #refreshBtn{font-size:15px;line-height:1}
   #refreshBtn.spin{animation:spin .7s linear infinite;pointer-events:none;opacity:.6}
   #refreshBtn.ok{color:var(--good);border-color:var(--good)}
@@ -110,6 +113,7 @@
 <div class="wrap">
   <header>
     <div class="title"><h1>Chef Claude</h1><span class="sub" id="subtitle"></span><span class="spacer"></span>
+      <button class="syncpill" id="syncPill" title="Sync status"></button>
       <button class="iconbtn gear" id="refreshBtn" title="Check for a new week">↻</button>
       <button class="iconbtn" id="reqOpen">✎ Requests</button>
       <button class="iconbtn gear" id="setOpen" title="Settings">⚙</button></div>
@@ -145,7 +149,7 @@
 <div class="sheet" id="setSheet">
   <div class="grab"></div>
   <h3>Settings &amp; Publish</h3>
-  <p class="lead">One-time setup: enter the PIN you set in Vercel (PUBLISH_SECRET). It's stored only on this device and lets this app send requests and publish menus.</p>
+  <p class="lead">Enter the PIN you set in Vercel (PUBLISH_SECRET). Stored only on this device — it lets this app send requests, publish menus, and <b>sync your checkmarks across devices</b>. If the pill up top says <b>⚠ Not syncing</b>, re-enter it here (phones can drop it after a while idle).</p>
   <div class="lbl">Your PIN</div>
   <input class="field" id="pinInput" type="password" placeholder="PUBLISH_SECRET" autocomplete="off"/>
   <div class="divider"></div>
@@ -320,7 +324,19 @@ reqBg.onclick=()=>closeSheet(reqSheet,reqBg);
 document.getElementById("setOpen").onclick=()=>{document.getElementById("pinInput").value=pin;openSheet(setSheet,setBg);};
 document.getElementById("setClose").onclick=()=>closeSheet(setSheet,setBg);
 setBg.onclick=()=>closeSheet(setSheet,setBg);
-document.getElementById("pinInput").addEventListener("input",e=>{pin=e.target.value;try{localStorage.setItem(LSP,pin);}catch(_){}pullState();});
+document.getElementById("pinInput").addEventListener("input",e=>{
+  const was=!!pin;pin=e.target.value.trim();try{localStorage.setItem(LSP,pin);}catch(_){}
+  if(!was&&pin){mergeUpNext=true;requestPersist();} // sync just turned on — push this device's marks up, don't lose them
+  updateSyncUI();pullState();
+});
+// Sync status pill: amber when this device isn't syncing (no PIN), green when it is. Tapping opens Settings.
+function updateSyncUI(){const p=document.getElementById("syncPill");if(!p)return;
+  if(syncOn()){p.className="syncpill on";p.textContent="✓ Synced";}
+  else{p.className="syncpill off";p.textContent="⚠ Not syncing";}}
+document.getElementById("syncPill").onclick=()=>{document.getElementById("pinInput").value=pin;openSheet(setSheet,setBg);};
+// Ask the browser to keep our storage from being evicted (iOS drops PWA storage after ~7 idle days,
+// which silently wipes the PIN and turns sync off). Best-effort; installed PWAs benefit most.
+function requestPersist(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(_){}}
 
 /* ---- copy a recipe name to the clipboard ---- */
 async function copyName(name,btn){
@@ -333,7 +349,7 @@ async function copyName(name,btn){
 
 /* ---- cross-device sync of checkmarks, ratings & swap flags (via api/state) ---- */
 const SYNC_URL="api/state";
-let pendSet={},pendUnset=[],pendLog={},pushTimer=null,pulling=false;
+let pendSet={},pendUnset=[],pendLog={},pushTimer=null,pulling=false,mergeUpNext=false;
 const syncOn=()=>!!pin;
 function queuePush(){if(!syncOn())return;if(pushTimer)clearTimeout(pushTimer);pushTimer=setTimeout(flushPush,1200);}
 async function flushPush(){pushTimer=null;if(!syncOn())return;
@@ -390,13 +406,20 @@ async function pullState(){if(!syncOn()||pulling)return;pulling=true;
     if(r.ok){const s=await r.json();
       const remoteEmpty=!Object.keys(s.eaten||{}).length&&!Object.keys(s.ratings||{}).length&&!Object.keys(s.swaps||{}).length&&!Object.keys(s.carry||{}).length&&!Object.keys(s.eatenLog||{}).length;
       const localHas=Object.keys(eaten).length||Object.keys(ratings).length||Object.keys(swaps).length||Object.keys(carry).length||Object.keys(eatenLog).length;
-      if(remoteEmpty&&localHas&&!Object.keys(pendSet).length&&!pendUnset.length){ // seed empty remote from this device
-        Object.keys(eaten).forEach(k=>pendSet[k]=true);queuePush();
-        Object.keys(ratings).forEach(n=>postState({rate:{name:n,rating:ratings[n].rating}},false));
-        Object.keys(swaps).forEach(k=>postState({swap:{key:k,name:swaps[k].name,on:true}},false));
-        Object.keys(carry).forEach(k=>postState({carry:{key:k,name:carry[k].name,on:true}},false));
-        const logMap={};Object.keys(eatenLog).forEach(n=>logMap[n]=eatenLog[n].week||"");if(Object.keys(logMap).length)postState({log:logMap},false);
-      }else{applyRemote(s);}
+      // Push this device's local marks UP to the server when we're seeding an empty remote, OR the
+      // first pull right after the PIN was (re)entered — so checkmarks made while this device wasn't
+      // syncing aren't wiped by the adopt below. Additive: it never deletes remote marks. We also fold
+      // the local-only entries into the snapshot we adopt, so they show immediately (not after a round-trip).
+      if((remoteEmpty||mergeUpNext)&&localHas){
+        s.eaten=s.eaten||{};s.ratings=s.ratings||{};s.swaps=s.swaps||{};s.carry=s.carry||{};s.eatenLog=s.eatenLog||{};
+        Object.keys(eaten).forEach(k=>{if(!s.eaten[k]){pendSet[k]=true;s.eaten[k]=true;}});if(Object.keys(pendSet).length)queuePush();
+        Object.keys(ratings).forEach(n=>{if(!s.ratings[n]){s.ratings[n]=ratings[n];postState({rate:{name:n,rating:ratings[n].rating}},false);}});
+        Object.keys(swaps).forEach(k=>{if(!s.swaps[k]){s.swaps[k]=swaps[k];postState({swap:{key:k,name:swaps[k].name,on:true}},false);}});
+        Object.keys(carry).forEach(k=>{if(!s.carry[k]){s.carry[k]=carry[k];postState({carry:{key:k,name:carry[k].name,on:true}},false);}});
+        const logMap={};Object.keys(eatenLog).forEach(n=>{if(!s.eatenLog[n]){s.eatenLog[n]=eatenLog[n];logMap[n]=eatenLog[n].week||"";}});if(Object.keys(logMap).length)postState({log:logMap},false);
+      }
+      mergeUpNext=false;
+      applyRemote(s); // adopt server truth, now augmented with this device's local-only marks
     }
   }catch(e){/* offline: keep local */}finally{pulling=false;}
 }
@@ -450,6 +473,7 @@ document.getElementById("publishBtn").onclick=async()=>{
   }catch(e){st.className="status err";st.textContent="Backend not reachable (is it deployed yet?).";}
 };
 
+updateSyncUI(); if(syncOn())requestPersist();
 loadData();
 
 // PWA: register the service worker so the app installs to the home screen and works offline.
