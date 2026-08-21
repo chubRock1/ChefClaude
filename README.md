@@ -17,7 +17,7 @@ sw.js                 <- service worker: offline app shell; never caches /api; a
 icons/                <- app icons (192/512/apple-touch/favicon) — chef's toque on brand orange
 data/meals.json       <- the live menu the app fetches at runtime (published menus land here)
 data/requests.json    <- rolling log of requests sent from the app (newest first)
-data/state.json       <- synced state: { eaten, week, ratings, swaps, carry, eatenLog } across devices
+data/state.json       <- synced state: { eaten, planned, week, ratings, swaps, carry, eatenLog } across devices
 api/_github.js        <- shared helper: reads/writes repo files via the GitHub Contents API
 api/requests.js       <- POST /api/requests  -> appends to data/requests.json
 api/publish.js        <- POST /api/publish   -> validates + writes data/meals.json
@@ -65,14 +65,23 @@ A header toggle switches between **By day** (each day's breakfast/lunch/dinner t
 Handy when you mix and match — e.g. one day's breakfast with another day's lunch. Desserts and the
 Extra options section show in both views. The choice is remembered per device.
 
+## Planned vs. Eaten (two ticks per row)
+Every meal row has **two ticks** on the left, labeled **Plan** and **Eaten**. **Plan** flags a meal
+as chosen for the week and highlights the whole row green (with a "planned" badge) — so you can
+assemble a day from meals anywhere in the menu (great with the By-course view) and see at a glance
+what's on deck, even when the dish isn't from that calendar day. **Eaten** (tap the row, or its
+check) marks it actually eaten (strike-through). They're independent: a meal can be planned, eaten,
+or both. Planned flags are `menuSig`-scoped like eaten, so publishing a new menu clears them
+automatically. Both sync across devices.
+
 ## Per-meal actions (copy / rate / carry / swap)
-Every meal row has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe
+Every meal row also has: a **📋 copy** button (copies the exact recipe name for pasting into a recipe
 app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — keyed by recipe *name* so it
 applies wherever that dish appears), **⏭ next wk** (carry this meal into the upcoming week — for a
 dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals,
 desserts, and extras can all be checked off as eaten, and the footer "X / N eaten this week" counter
-includes all of them (N = 21 day meals + desserts + extras). Desserts and extras get copy + rating +
-carry (no swap). All syncs across devices.
+includes all of them (N = 21 day meals + desserts + extras). Desserts and extras get plan + copy +
+rating + carry (no swap). All syncs across devices.
 
 ## Extra options (spare picks)
 Each week includes a required `extras` block — one spare breakfast, lunch, dinner, and dessert —
@@ -121,7 +130,7 @@ the upcoming week, and eatenLog tells it what was actually eaten (so un-eaten di
 Read it via the GitHub Contents API (fresh, not the CDN-cached raw URL) — see **Weekly planning
 brief** below for the exact fetch.
 
-state.json shape: `{ eaten:{ "<menuSig>|<week>|<day>|<slot>":true }, week, ratings:{ "<recipe name>":{rating,at} }, swaps:{ "<weekLabel>||<day>||<slot>":{name,at} }, carry:{ same key shape } }`
+state.json shape: `{ eaten:{ "<menuSig>|<week>|<day>|<slot>":true }, planned:{ same key shape as eaten }, week, ratings:{ "<recipe name>":{rating,at} }, swaps:{ "<weekLabel>||<day>||<slot>":{name,at} }, carry:{ same key shape } }`
 
 ## Install on each device (iPhone/iPad)
 Open the Vercel URL in Safari -> Share -> **Add to Home Screen**. Launches full-screen with the

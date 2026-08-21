@@ -51,9 +51,17 @@
   .day-card.weekend{background:linear-gradient(180deg,var(--weekend),var(--card) 60%)}
   .meal{display:flex;gap:12px;padding:12px 13px;border-top:1px solid var(--line);cursor:pointer;align-items:flex-start}
   .meal:first-child{border-top:0}.meal.eaten{background:var(--eaten)}
-  .check{flex:0 0 24px;height:24px;margin-top:2px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff}
+  .meal.planned:not(.eaten){background:#eefaf1;box-shadow:inset 3px 0 0 var(--good)}
+  .ticks{flex:0 0 auto;display:flex;gap:8px;margin-top:2px}
+  .tickwrap{display:flex;flex-direction:column;align-items:center;gap:3px;width:30px}
+  .ticklbl{font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .check{flex:0 0 24px;width:24px;height:24px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff;cursor:pointer}
   .meal.eaten .check{background:var(--good);border-color:var(--good)}
   .check svg{width:13px;height:13px;opacity:0;transform:scale(.6);transition:.15s}.meal.eaten .check svg{opacity:1;transform:scale(1)}
+  .plantick{flex:0 0 24px;width:24px;height:24px;border-radius:50%;border:2px solid #d8cfc4;display:grid;place-items:center;transition:.15s;background:#fff;cursor:pointer;font-size:12px;line-height:1;color:transparent}
+  .meal.planned .plantick{background:var(--good);border-color:var(--good);color:#fff}
+  .meal.planned .ticklbl.plan{color:var(--good)}
+  .plan-badge{font-size:10px;font-weight:700;color:#fff;background:var(--good);border-radius:6px;padding:1px 6px;margin-left:6px}
   .mbody{flex:1;min-width:0}
   .mtag{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
   .mname{font-size:14.5px;line-height:1.3;margin:2px 0 0;font-weight:600}
@@ -165,8 +173,9 @@ const FALLBACK = {"title": "Chef Claude \u00b7 Meal Plan", "chef": "Chef Claude"
 let DATA = FALLBACK;
 const LS="chefclaude.eaten.v1", LSW="chefclaude.week.v1", LSR="chefclaude.requests.v1", LSP="chefclaude.pin.v1",
       LSRT="chefclaude.ratings.v1", LSSW="chefclaude.swaps.v1", LSCA="chefclaude.carry.v1", LSMS="chefclaude.menusig.v1",
-      LSEL="chefclaude.eatenlog.v1", LSV="chefclaude.view.v1";
+      LSEL="chefclaude.eatenlog.v1", LSV="chefclaude.view.v1", LSPL="chefclaude.planned.v1";
 let eaten={}; try{eaten=JSON.parse(localStorage.getItem(LS)||"{}");}catch(e){}
+let planned={}; try{planned=JSON.parse(localStorage.getItem(LSPL)||"{}");}catch(e){}
 let ratings={}; try{ratings=JSON.parse(localStorage.getItem(LSRT)||"{}");}catch(e){}
 let swaps={}; try{swaps=JSON.parse(localStorage.getItem(LSSW)||"{}");}catch(e){}
 let carry={}; try{carry=JSON.parse(localStorage.getItem(LSCA)||"{}");}catch(e){}
@@ -179,7 +188,8 @@ try{const r=JSON.parse(localStorage.getItem(LSR)||"null");if(r)req=Object.assign
 let pin=""; try{pin=localStorage.getItem(LSP)||"";}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(eaten));localStorage.setItem(LSW,String(wk));
   localStorage.setItem(LSRT,JSON.stringify(ratings));localStorage.setItem(LSSW,JSON.stringify(swaps));
-  localStorage.setItem(LSCA,JSON.stringify(carry));localStorage.setItem(LSEL,JSON.stringify(eatenLog));}catch(e){}};
+  localStorage.setItem(LSCA,JSON.stringify(carry));localStorage.setItem(LSEL,JSON.stringify(eatenLog));
+  localStorage.setItem(LSPL,JSON.stringify(planned));}catch(e){}};
 const swapKey=(label,day,slot)=>`${label}||${day}||${slot}`;
 const saveReq=()=>{try{localStorage.setItem(LSR,JSON.stringify(req));}catch(e){}};
 // Eaten keys are prefixed with the menu signature, so publishing a new menu starts fresh automatically.
@@ -213,18 +223,23 @@ function dayTotals(day){let sf=0,cal=0;SLOTS.forEach(s=>{sf+=day.meals[s].satfat
 const CHECK_SVG='<div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>';
 // Build one meal row. o = { tag, k (eaten key), fk (swap/carry flag key), allowSwap }
 function mealRow(m,o){
-  const on=!!eaten[o.k];
+  const on=!!eaten[o.k], plan=!!planned[o.k];
   const swapped=o.allowSwap&&o.fk?!!swaps[o.fk]:false, carried=o.fk?!!carry[o.fk]:false;
   const rt=ratings[m.name]&&ratings[m.name].rating;
   const el=document.createElement("div");
-  el.className="meal"+(on?" eaten":"")+(swapped?" toswap":"")+(carried?" tocarry":"");
-  el.innerHTML=CHECK_SVG+
-    `<div class="mbody"><div class="mtag">${o.tag}${m.leftover?'<span class="lo-badge">make-ahead</span>':''}${swapped?'<span class="swap-badge">to swap</span>':''}${carried?'<span class="carry-badge">→ next week</span>':''}</div>
+  el.className="meal"+(on?" eaten":"")+(plan?" planned":"")+(swapped?" toswap":"")+(carried?" tocarry":"");
+  el.innerHTML=
+    `<div class="ticks">
+      <div class="tickwrap"><button class="plantick" title="Mark planned for this week">&#10003;</button><span class="ticklbl plan">Plan</span></div>
+      <div class="tickwrap">${CHECK_SVG}<span class="ticklbl">Eaten</span></div>
+    </div>`+
+    `<div class="mbody"><div class="mtag">${o.tag}${plan?'<span class="plan-badge">planned</span>':''}${m.leftover?'<span class="lo-badge">make-ahead</span>':''}${swapped?'<span class="swap-badge">to swap</span>':''}${carried?'<span class="carry-badge">→ next week</span>':''}</div>
     <div class="nameline"><div class="mname">${m.name}</div><button class="copybtn" title="Copy recipe name">📋</button></div>
     <div class="mmeta"><span class="chip lo">${m.satfat.toFixed(1)} g sat</span><span class="chip">${m.cal} kcal</span>${m.time?`<span class="chip time">${m.time}</span>`:''}</div>
     ${m.note?`<div class="note">${m.note}</div>`:''}
     <div class="mactions"><button class="act up${rt==='up'?' on':''}" title="Keep in rotation">👍</button><button class="act down${rt==='down'?' on':''}" title="Don't repeat">👎</button><button class="act carry${carried?' on':''}" title="Carry into the upcoming week">⏭ next wk</button>${o.allowSwap?`<button class="act swap${swapped?' on':''}" title="Swap this one out">⇄ swap</button>`:''}</div></div>`;
   el.onclick=()=>toggleEaten(o.k,m.name);
+  el.querySelector(".plantick").onclick=(ev)=>{ev.stopPropagation();togglePlanned(o.k,m.name);};
   const cb=el.querySelector(".copybtn");cb.onclick=(ev)=>{ev.stopPropagation();copyName(m.name,cb);};
   el.querySelector(".act.up").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"up");};
   el.querySelector(".act.down").onclick=(ev)=>{ev.stopPropagation();rate(m.name,"down");};
@@ -371,6 +386,11 @@ function toggleEaten(k,name){
   else{delete eaten[k];pendUnset.push(k);delete pendSet[k];}
   save();render();queuePush();
 }
+function togglePlanned(k,name){
+  const on=!planned[k];
+  if(on)planned[k]=true;else delete planned[k];
+  save();render();postState({plan:{key:k,name,on}},true); // menuSig-scoped, so a new menu auto-resets it
+}
 function clearWeekEaten(){const removed=[];
   DATA.weeks[wk].days.forEach((d,di)=>SLOTS.forEach(s=>{const k=key(wk,di,s);if(eaten[k])delete eaten[k];removed.push(k);}));
   save();render();
@@ -395,6 +415,7 @@ function toggleCarry(k,name){
 // Adopt server state; local pending checkmarks win until their push confirms.
 function applyRemote(s){if(!s||typeof s!=="object")return;
   if(s.eaten&&typeof s.eaten==="object"){eaten=s.eaten;for(const k in pendSet)eaten[k]=true;for(const k of pendUnset)delete eaten[k];}
+  if(s.planned&&typeof s.planned==="object")planned=s.planned;
   if(s.ratings&&typeof s.ratings==="object")ratings=s.ratings;
   if(s.swaps&&typeof s.swaps==="object")swaps=s.swaps;
   if(s.carry&&typeof s.carry==="object")carry=s.carry;
@@ -404,15 +425,16 @@ function applyRemote(s){if(!s||typeof s!=="object")return;
 async function pullState(){if(!syncOn()||pulling)return;pulling=true;
   try{const r=await fetch(SYNC_URL,{method:"GET",headers:{"x-publish-secret":pin},cache:"no-store"});
     if(r.ok){const s=await r.json();
-      const remoteEmpty=!Object.keys(s.eaten||{}).length&&!Object.keys(s.ratings||{}).length&&!Object.keys(s.swaps||{}).length&&!Object.keys(s.carry||{}).length&&!Object.keys(s.eatenLog||{}).length;
-      const localHas=Object.keys(eaten).length||Object.keys(ratings).length||Object.keys(swaps).length||Object.keys(carry).length||Object.keys(eatenLog).length;
+      const remoteEmpty=!Object.keys(s.eaten||{}).length&&!Object.keys(s.planned||{}).length&&!Object.keys(s.ratings||{}).length&&!Object.keys(s.swaps||{}).length&&!Object.keys(s.carry||{}).length&&!Object.keys(s.eatenLog||{}).length;
+      const localHas=Object.keys(eaten).length||Object.keys(planned).length||Object.keys(ratings).length||Object.keys(swaps).length||Object.keys(carry).length||Object.keys(eatenLog).length;
       // Push this device's local marks UP to the server when we're seeding an empty remote, OR the
       // first pull right after the PIN was (re)entered — so checkmarks made while this device wasn't
       // syncing aren't wiped by the adopt below. Additive: it never deletes remote marks. We also fold
       // the local-only entries into the snapshot we adopt, so they show immediately (not after a round-trip).
       if((remoteEmpty||mergeUpNext)&&localHas){
-        s.eaten=s.eaten||{};s.ratings=s.ratings||{};s.swaps=s.swaps||{};s.carry=s.carry||{};s.eatenLog=s.eatenLog||{};
+        s.eaten=s.eaten||{};s.planned=s.planned||{};s.ratings=s.ratings||{};s.swaps=s.swaps||{};s.carry=s.carry||{};s.eatenLog=s.eatenLog||{};
         Object.keys(eaten).forEach(k=>{if(!s.eaten[k]){pendSet[k]=true;s.eaten[k]=true;}});if(Object.keys(pendSet).length)queuePush();
+        Object.keys(planned).forEach(k=>{if(!s.planned[k]){s.planned[k]=true;postState({plan:{key:k,name:"",on:true}},false);}});
         Object.keys(ratings).forEach(n=>{if(!s.ratings[n]){s.ratings[n]=ratings[n];postState({rate:{name:n,rating:ratings[n].rating}},false);}});
         Object.keys(swaps).forEach(k=>{if(!s.swaps[k]){s.swaps[k]=swaps[k];postState({swap:{key:k,name:swaps[k].name,on:true}},false);}});
         Object.keys(carry).forEach(k=>{if(!s.carry[k]){s.carry[k]=carry[k];postState({carry:{key:k,name:carry[k].name,on:true}},false);}});

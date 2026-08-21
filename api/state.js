@@ -1,7 +1,8 @@
 // /api/state — cross-device sync for eaten checkmarks, meal ratings, and swap flags.
-//   GET  /api/state  -> { eaten:{key:true}, week:0, ratings:{name:{rating,at}}, swaps:{key:{name,at}} }
+//   GET  /api/state  -> { eaten:{key:true}, planned:{key:true}, week:0, ratings:{name:{rating,at}}, swaps:{key:{name,at}} }
 //   POST /api/state  -> merges a change into data/state.json and returns the new state. Fields:
 //        { set:{key:true}, unset:[key] }   eaten checkmarks (key = "week|day|slot")
+//        { plan:{ key, name, on } }          "planned this week" flag (key = same menuSig-scoped eaten key)
 //        { week:0 }                          selected week
 //        { rate:{ name, rating } }           rating: "up" | "down" | null/"" to clear (keyed by recipe name)
 //        { swap:{ key, name, on } }          flag a menu slot to be swapped out (key = "weekLabel||day||slot")
@@ -20,6 +21,7 @@ function normalize(j) {
   const s = j && typeof j === "object" ? j : {};
   return {
     eaten: (s.eaten && typeof s.eaten === "object") ? s.eaten : {},
+    planned: (s.planned && typeof s.planned === "object") ? s.planned : {},
     week: Number.isInteger(s.week) ? s.week : 0,
     ratings: (s.ratings && typeof s.ratings === "object") ? s.ratings : {},
     swaps: (s.swaps && typeof s.swaps === "object") ? s.swaps : {},
@@ -46,6 +48,7 @@ module.exports = async (req, res) => {
       const unset = Array.isArray(body && body.unset) ? body.unset : [];
       const week = Number.isInteger(body && body.week) ? body.week : null;
       const rate = (body && body.rate && typeof body.rate === "object") ? body.rate : null;
+      const plan = (body && body.plan && typeof body.plan === "object") ? body.plan : null;
       const swap = (body && body.swap && typeof body.swap === "object") ? body.swap : null;
       const carry = (body && body.carry && typeof body.carry === "object") ? body.carry : null;
       const clearFlags = !!(body && body.clearFlags);
@@ -57,6 +60,9 @@ module.exports = async (req, res) => {
         const state = normalize(cur.json);
         for (const k of Object.keys(set)) { if (set[k]) state.eaten[k] = true; else delete state.eaten[k]; }
         for (const k of unset) delete state.eaten[k];
+        if (plan && typeof plan.key === "string" && plan.key) {
+          if (plan.on) state.planned[plan.key] = true; else delete state.planned[plan.key];
+        }
         if (week !== null) state.week = week;
         if (rate && typeof rate.name === "string" && rate.name) {
           if (rate.rating === "up" || rate.rating === "down") state.ratings[rate.name] = { rating: rate.rating, at: new Date().toISOString() };
