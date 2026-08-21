@@ -8,3 +8,11 @@ Thumbs.db
 .env.*
 .vercel/
 node_modules/
+
+# Nutrition enrichment tool — local API cache + raw recipe exports (never committed)
+tools/.fdc_cache.json
+tools/recipes_src/
+
+# Python build cruft
+__pycache__/
+*.pyc

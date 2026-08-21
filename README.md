@@ -22,7 +22,42 @@ api/_github.js        <- shared helper: reads/writes repo files via the GitHub C
 api/requests.js       <- POST /api/requests  -> appends to data/requests.json
 api/publish.js        <- POST /api/publish   -> validates + writes data/meals.json
 api/state.js          <- GET/POST /api/state -> reads/merges data/state.json (eaten, ratings, swaps, carry)
+tools/                <- offline build tools (run locally, not part of the app runtime)
+  enrich_nutrition.py <- estimates missing sat-fat + calories via USDA FoodData Central
+  requirements.txt    <- python deps for the tool
+  README.md           <- full run instructions for the enrichment tool
 ```
+
+## Tools: nutrition enrichment (`tools/enrich_nutrition.py`)
+
+An **offline** build tool (never runs in the app, no runtime cost) that fills in per-serving
+**saturated fat + calories** for recipes missing them, using the free
+[USDA FoodData Central](https://fdc.nal.usda.gov/api-key-signup.html) API. It's honest by design:
+it **backtests** against recipes that already have real numbers, **calibrates** the confidence
+level at which ≥90% of estimates land within ±10%, and **enriches only** the missing recipes at or
+above that bar. If nothing clears it, it writes nothing. Every value it writes is tagged
+`"source":"estimated"` so it's never confused with source-verified nutrition, and Chef Claude plans
+with it conservatively (upper-bound sat fat, verified values preferred).
+
+**Inputs you supply:** a free `USDA_API_KEY` (your credential — set it yourself) and the
+RecipeKeeper `recipes.html` export(s) to point `--input` at. Both stay local — the API cache
+(`tools/.fdc_cache.json`) and raw exports (`tools/recipes_src/`) are gitignored.
+
+```bash
+cd tools
+pip install -r requirements.txt
+export USDA_API_KEY=your_key_here          # PowerShell: $env:USDA_API_KEY="your_key_here"
+
+# See the accuracy table only (no writes):
+python enrich_nutrition.py --input "recipes_src/**/recipes.html" --mode backtest
+
+# Calibrate, then write estimates that clear the bar:
+python enrich_nutrition.py --input "recipes_src/**/recipes.html" \
+    --out ../data/recipes_enriched.json --mode both
+```
+
+Commit the resulting `data/recipes_enriched.json` so Chef Claude merges it each planning session.
+See [tools/README.md](tools/README.md) for flags and the full write-up.
 
 ## Views: by day / by course
 A header toggle switches between **By day** (each day's breakfast/lunch/dinner together) and
