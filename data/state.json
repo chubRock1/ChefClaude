@@ -8,7 +8,12 @@
   "planned": {},
   "week": 0,
   "ratings": {},
-  "swaps": {},
+  "swaps": {
+    "Week 2 · Summer||Tuesday||dinner": {
+      "name": "Pan-Seared Pork Cutlets with Tomato Chutney",
+      "at": "2026-08-21T22:50:13.602Z"
+    }
+  },
   "carry": {},
   "eatenLog": {
     "Honey-Glazed Peaches with Hazelnuts": {
