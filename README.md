@@ -83,15 +83,19 @@ app), **👍 / 👎** rating (👍 = keep in rotation, 👎 = don't repeat — k
 applies wherever that dish appears), **⏭ next wk** (carry this meal into the upcoming week — for a
 dish you didn't get to but still want), and **⇄ swap** (flag this slot to be replaced). Meals,
 desserts, and extras can all be checked off as eaten, and the footer "X / N eaten this week" counter
-includes all of them (N = 21 day meals + desserts + extras). Desserts and extras get plan + copy +
+includes all of them (N = 21 day meals + desserts + extras, extras including the spare dessert and
+the side dishes). Desserts and extras get plan + copy +
 rating + carry (no swap). All syncs across devices.
 
 ## Extra options (spare picks)
-Each week includes a required `extras` block — one spare breakfast, lunch, dinner, and dessert —
-shown in an "Extra options" card at the end. These are extra choices to pull from if a planned meal
-doesn't happen. Chef Claude curates them at planning time (see the required note in **Weekly planning
-brief**). The app still renders fine if a week lacks extras, but every menu Chef Claude publishes
-should include them.
+Each week includes a required `extras` block — one spare breakfast, lunch, dinner, and dessert, plus
+a couple of **side dishes** (`extras.sides`, an array) — shown in an "Extra options" card at the end.
+These are extra choices to pull from if a planned meal doesn't happen. The side dishes should
+highlight whatever vegetables appear in the current requests (`data/requests.json`) — e.g. a
+Tomatoes request yields tomato-forward sides, each noting `highlights <Veg>`. Chef Claude curates
+them at planning time (see the required note in **Weekly planning brief**). The app still renders
+fine if a week lacks any of these, but every menu Chef Claude publishes should include the spare
+course picks and the veg-highlighting sides.
 
 ## Eaten history (what you actually ate)
 Every meal you check off is logged by recipe name + week + date in `state.json`'s `eatenLog`
@@ -187,8 +191,10 @@ Then build the two weeks, apply the standing rules (see **Nutrition integrity** 
 a `meals.json` to publish.
 
 **REQUIRED — every published menu must include an `extras` block for EACH week:** one spare
-`breakfast`, one `lunch`, one `dinner`, and one `dessert` (four items per week), each with the same
-fields as a normal meal (`name, satfat, cal, time, note, leftover`). These are the app's "Extra
+`breakfast`, one `lunch`, one `dinner`, one `dessert`, and a `sides` array of ~2 side dishes, each
+with the same fields as a normal meal (`name, satfat, cal, time, note, leftover`). The `sides` must
+highlight the vegetables in `data/requests.json` (set each side's `note` to `spare · highlights
+<Veg>`); if no veg is requested, choose seasonal produce-forward sides. These are the app's "Extra
 options" spare picks. Do not omit them. They are not counted toward any day's ≤10 g sat-fat total,
 but each individual extra should still be a sensible low-sat-fat choice and follow every standing
 rule (no shellfish/lamb, fish never as a leftover, verbatim RecipeKeeper names, etc.).
@@ -220,7 +226,8 @@ with header `Accept: application/vnd.github.raw` (holds only vegetables/proteins
   OK (incl. bacon/pancetta), fish never as a leftover, only 2 non-consecutive make-ahead
   lunches per week, and beef at most once a month.
 - **Every published menu MUST include an `extras` block per week** (a spare breakfast, lunch,
-  dinner, and dessert). This is a menu-construction requirement, not optional. See the
+  dinner, and dessert, plus a `sides` array of ~2 veg-highlighting side dishes keyed to
+  `data/requests.json`). This is a menu-construction requirement, not optional. See the
   "Weekly planning brief" section above for details.
 
 ## Done since the original package
@@ -251,9 +258,10 @@ with header `Accept: application/vnd.github.raw` (holds only vegetables/proteins
         // ... 7 days ...
       ],
       "desserts": [ { "name","satfat","cal","time","note" } ],
-      "extras": {                          // REQUIRED every menu: one spare pick per course
+      "extras": {                          // REQUIRED every menu: one spare pick per course + veg sides
         "breakfast": { "name","satfat","cal","time","note","leftover" },
-        "lunch": { ... }, "dinner": { ... }, "dessert": { ... } } }
+        "lunch": { ... }, "dinner": { ... }, "dessert": { ... },
+        "sides": [ { "name","satfat","cal","time","note":"spare · highlights <Veg>","leftover" } ] } }
     // ... Week 2 ...
   ]
 }

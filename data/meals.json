@@ -270,7 +270,33 @@
           "time": "~25 min",
           "note": "spare · fresh (not a leftover)",
           "leftover": false
-        }
+        },
+        "dessert": {
+          "name": "Dark Chocolate–Dipped Strawberries",
+          "satfat": 2,
+          "cal": 150,
+          "time": "~15 min",
+          "note": "spare · make-ahead",
+          "leftover": false
+        },
+        "sides": [
+          {
+            "name": "Heirloom Tomato & Basil Salad",
+            "satfat": 0.6,
+            "cal": 90,
+            "time": "~10 min",
+            "note": "spare · highlights Tomatoes",
+            "leftover": false
+          },
+          {
+            "name": "Blistered Cherry Tomatoes with Garlic",
+            "satfat": 1,
+            "cal": 110,
+            "time": "~15 min",
+            "note": "spare · highlights Tomatoes",
+            "leftover": false
+          }
+        ]
       }
     },
     {
@@ -537,7 +563,33 @@
           "time": "~30 min +marinate",
           "note": "spare · fresh",
           "leftover": false
-        }
+        },
+        "dessert": {
+          "name": "Greek Yogurt with Honey & Toasted Walnuts",
+          "satfat": 1.5,
+          "cal": 190,
+          "time": "~5 min",
+          "note": "spare · make-ahead",
+          "leftover": false
+        },
+        "sides": [
+          {
+            "name": "Tomato-Cucumber Panzanella",
+            "satfat": 1.2,
+            "cal": 160,
+            "time": "~15 min",
+            "note": "spare · highlights Tomatoes",
+            "leftover": false
+          },
+          {
+            "name": "Slow-Roasted Roma Tomatoes",
+            "satfat": 0.8,
+            "cal": 95,
+            "time": "~40 min",
+            "note": "spare · highlights Tomatoes",
+            "leftover": false
+          }
+        ]
       }
     }
   ]

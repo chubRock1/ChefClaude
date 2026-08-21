@@ -263,8 +263,12 @@ function render(){
   const tally=(m,k)=>{if(planned[k]&&m){pc++;psf+=(+m.satfat||0);pcal+=(+m.cal||0);}};
   week.days.forEach((d,di)=>SLOTS.forEach(s=>{total++;const k=key(wk,di,s);if(eaten[k])ec++;tally(d.meals[s],k);}));
   if(week.desserts) week.desserts.forEach((m,i)=>{total++;const k=key(wk,"D",i);if(eaten[k])ec++;tally(m,k);});
-  if(week.extras&&typeof week.extras==="object") ["breakfast","lunch","dinner","dessert"].forEach(s=>{
-    if(week.extras[s]&&week.extras[s].name){total++;const k=key(wk,"X",s);if(eaten[k])ec++;tally(week.extras[s],k);}});
+  if(week.extras&&typeof week.extras==="object"){
+    ["breakfast","lunch","dinner","dessert"].forEach(s=>{
+      if(week.extras[s]&&week.extras[s].name){total++;const k=key(wk,"X",s);if(eaten[k])ec++;tally(week.extras[s],k);}});
+    if(Array.isArray(week.extras.sides)) week.extras.sides.forEach((m,i)=>{
+      if(m&&m.name){total++;const k=key(wk,"X","side"+i);if(eaten[k])ec++;tally(m,k);}});
+  }
   document.getElementById("eatenline").innerHTML=`<b>${ec}</b> / ${total} eaten this week`;
   const pl=document.getElementById("plannedline");
   if(pc){pl.classList.add("show");pl.innerHTML=`Planned: <b>${pc}</b> ${pc===1?"meal":"meals"} · <b>${psf.toFixed(1)} g</b> sat · <b>${Math.round(pcal).toLocaleString()}</b> kcal`;}
@@ -300,16 +304,19 @@ function render(){
     wrap.appendChild(card);main.appendChild(wrap);
   }
 
-  // Extra options: one spare breakfast/lunch/dinner/dessert to pick from
+  // Extra options: spare breakfast/lunch/dinner/dessert + a couple side dishes to pick from
   if(week.extras&&typeof week.extras==="object"){
     const order=["breakfast","lunch","dinner","dessert"];
     const present=order.filter(s=>week.extras[s]&&week.extras[s].name);
-    if(present.length){
+    const sides=Array.isArray(week.extras.sides)?week.extras.sides.filter(m=>m&&m.name):[];
+    if(present.length||sides.length){
       const wrap=document.createElement("div");wrap.className="desserts";
       wrap.appendChild(sectionHead("Extra options","spare picks for the week"));
       const card=document.createElement("div");card.className="day-card";
       present.forEach(s=>card.appendChild(mealRow(week.extras[s],
         {tag:"Extra · "+(TAG[s]||"Dessert"),k:key(wk,"X",s),fk:swapKey(week.label,"Extra",s),allowSwap:false})));
+      sides.forEach((m,i)=>card.appendChild(mealRow(m,
+        {tag:"Extra · Side",k:key(wk,"X","side"+i),fk:swapKey(week.label,"Extra","side"+i),allowSwap:false})));
       wrap.appendChild(card);main.appendChild(wrap);
     }
   }
