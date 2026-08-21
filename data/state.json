@@ -1,7 +1,8 @@
 {
   "eaten": {
     "vxjpra|0|D|0": true,
-    "6tk9up|0|D|0": true
+    "6tk9up|0|D|0": true,
+    "6tk9up|0|0|lunch": true
   },
   "planned": {
     "6tk9up|0|0|lunch": true
@@ -17,6 +18,10 @@
     },
     "Overnight Slow Cooker Steel Cut Oats with Banana": {
       "at": "2026-08-21T15:37:47.637Z",
+      "week": "Week 1 · Summer"
+    },
+    "Tomato Salad with Tuna, Capers, and Black Olives": {
+      "at": "2026-08-21T16:12:17.288Z",
       "week": "Week 1 · Summer"
     }
   }
