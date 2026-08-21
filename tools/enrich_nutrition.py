@@ -142,7 +142,7 @@ def yield_servings(y):
 
 # ------------------------------------------------------------------- USDA lookup (cached)
 class FDC:
-    def __init__(self, api_key, cache_path):
+    def __init__(self, api_key, cache_path, max_per_hour=950):
         self.key = api_key
         self.cache_path = cache_path
         self.cache = {}
@@ -150,9 +150,18 @@ class FDC:
             try: self.cache = json.load(open(cache_path))
             except Exception: self.cache = {}
         self.calls = 0
+        # Proactive throttle: keep real API calls under the free-key ~1000/hour limit.
+        self.min_interval = 3600.0 / max_per_hour if max_per_hour else 0.0
+        self._last_call = 0.0
 
     def save(self):
         json.dump(self.cache, open(self.cache_path, "w"))
+
+    def _throttle(self):
+        if self.min_interval <= 0: return
+        wait = self.min_interval - (time.time() - self._last_call)
+        if wait > 0: time.sleep(wait)
+        self._last_call = time.time()
 
     def lookup(self, food_name):
         """Return (kcal_per_100g, satfat_per_100g) or None. Cached by cleaned name."""
@@ -164,6 +173,7 @@ class FDC:
                   "dataType": PREFERRED_TYPES}
         for attempt in range(4):
             try:
+                self._throttle()
                 r = requests.get(FDC_SEARCH, params=params, timeout=30)
                 self.calls += 1
                 if r.status_code == 429:
@@ -294,6 +304,8 @@ def main():
     ap.add_argument("--max-backtest", type=int, default=1200)
     ap.add_argument("--threshold", type=float, default=None,
                     help="skip calibration and use this confidence threshold directly")
+    ap.add_argument("--max-per-hour", type=int, default=950,
+                    help="proactive USDA API rate cap (free key allows ~1000/hour)")
     args = ap.parse_args()
 
     key = os.environ.get("USDA_API_KEY")
@@ -307,7 +319,7 @@ def main():
     missing = [r for r in recipes if (r["satfat"] is None or r["cal"] is None) and r["ings"]]
     print(f"{len(recipes)} unique recipes | {len(recipes)-len(missing)} with nutrition | {len(missing)} missing")
 
-    fdc = FDC(key, args.cache)
+    fdc = FDC(key, args.cache, max_per_hour=args.max_per_hour)
 
     threshold = args.threshold
     if args.mode in ("backtest", "both") and threshold is None:

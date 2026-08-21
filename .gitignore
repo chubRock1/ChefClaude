@@ -16,3 +16,6 @@ tools/recipes_src/
 # Python build cruft
 __pycache__/
 *.pyc
+
+# enrichment run log
+tools/run.log
