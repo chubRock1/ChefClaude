@@ -5,7 +5,9 @@
     "6tk9up|0|0|lunch": true,
     "6tk9up|0|5|dinner": true
   },
-  "planned": {},
+  "planned": {
+    "6tk9up|0|0|breakfast": true
+  },
   "week": 0,
   "ratings": {},
   "swaps": {},
