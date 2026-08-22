@@ -3,7 +3,8 @@
     "vxjpra|0|D|0": true,
     "6tk9up|0|D|0": true,
     "6tk9up|0|0|lunch": true,
-    "6tk9up|0|5|dinner": true
+    "6tk9up|0|5|dinner": true,
+    "6tk9up|0|6|breakfast": true
   },
   "planned": {},
   "week": 0,
@@ -38,6 +39,10 @@
     },
     "Orzo Salad with Arugula and Sun-Dried Tomatoes": {
       "at": "2026-08-21T22:48:42.016Z",
+      "week": "Week 1 · Summer"
+    },
+    "Weekend Morning Waffles": {
+      "at": "2026-08-22T22:35:25.756Z",
       "week": "Week 1 · Summer"
     }
   }
