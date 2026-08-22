@@ -1,0 +1,84 @@
+{
+  "generated": "2026-08-21",
+  "last_updated": "2026-08-21",
+  "note": "Recipes already searched and rejected -- skip re-searching these in future batches unless new info (e.g. a stored URL) becomes available.",
+  "count": 19,
+  "recipes": [
+    {
+      "name": "Paul Hollywood\u2019s crusty cob loaf",
+      "reason": "no published nutrition found anywhere online for this recipe (UK baking-show recipes typically don't carry nutrition panels)"
+    },
+    {
+      "name": "Chipotle Sloppy Joes",
+      "reason": "generic name -- many unrelated versions online (sat fat ranging 3g-36g), none matched this exact ingredient list (Vidalia onions, no-salt-added tomato sauce, 5 servings); no source URL stored to disambiguate"
+    },
+    {
+      "name": "3 Ingredient Sauteed Zucchini and Fennel {Paleo, Whole30, Vegan} \u2014 Tasting Page",
+      "reason": "exact source page found (tastingpage.com) but it has no nutrition panel at all"
+    },
+    {
+      "name": "Filetes de Pescado a la Veracruzana (Fish Fillets Braised with Tomatoes, Capers, Olives, and Herbs)",
+      "reason": "no exact match found -- many similar 'Veracruzana' fish recipes exist online, none matched this specific ingredient list"
+    },
+    {
+      "name": "Fennel and Chicken Braised with Lemon | Edible East Bay",
+      "reason": "exact source page found (edibleeastbay.com, cookbook excerpt) but it has no nutrition panel at all"
+    },
+    {
+      "name": "Almond Butter Flax Seed Granola Bars - The Secret Ingredient",
+      "reason": "could not locate the exact source page in search results despite the yield field showing '198 Calories per Serving' was once computed somewhere"
+    },
+    {
+      "name": "How To Cook Brown Rice Perfectly and Zucchini and Garlic Brown Rice \ufffd Olga's Flavor Factory",
+      "reason": "exact source page found (olgasflavorfactory.com) but it blocks automated fetching (HTTP 403); could not extract/confirm a nutrition panel"
+    },
+    {
+      "name": "Baked salmon with bacon on a bed of tatsoi Recipe - (4.5/5)",
+      "reason": "no exact source match in search; distinctive paleo ingredient list (coconut aminos, fish sauce, tatsoi) did not resolve to a specific page with nutrition"
+    },
+    {
+      "name": "Black Garlic North America\u2122 - Salmon with Black Garlic Glaze Recipe",
+      "reason": "exact source page found (blackgarlicna.com) but it blocks fetching (403); product-site recipe, no nutrition panel surfaced"
+    },
+    {
+      "name": "Roasted Cauliflower with Quinoa & Avocado - The Naked Food Life",
+      "reason": "exact source page found (thenakedfoodlife.com); ingredients match verbatim, but the page has no nutrition panel"
+    },
+    {
+      "name": "Seared Tuna Steak - Southern French Style \u2014 Simple French Cooking",
+      "reason": "source domain simplefrenchcooking.com no longer resolves (dead); no accessible cached copy with nutrition"
+    },
+    {
+      "name": "Seitan & Veggie Green Curry With Garlic Brown Rice Ramen \ufffd Chef Charity Morgan",
+      "reason": "charitymorgan.com recipes carry no nutrition panel (confirmed on a sibling recipe from the same site)"
+    },
+    {
+      "name": "Mango Bok Choy Fried Rice - Vegging at the Shore",
+      "reason": "exact source page found (veggingonthemountain.com); ingredients match, but no nutrition panel"
+    },
+    {
+      "name": "Tandoori Masala Chickpea & Quinoa Burgers with Cucumber Raita \ufffd Chef Charity Morgan",
+      "reason": "exact source page found (charitymorgan.com); ingredients match verbatim, but no nutrition panel"
+    },
+    {
+      "name": "These Sweet and Spicy Apple Chips Are the Perfect After-School Snack for Kids",
+      "reason": "source page (justapinch.com) blocks fetching (403); magazine repost, no nutrition panel surfaced"
+    },
+    {
+      "name": "Bread-Crusted Halibut with Leek Ragout and Red Pepper Pur e Recipe   SAVEUR",
+      "reason": "SAVEUR editorial recipe; page blocks fetching (403) and SAVEUR recipes carry no computed nutrition panel"
+    },
+    {
+      "name": "Chicken Carne Asada Tacos with Pickled Onions (serve with Spicy Black Beans)",
+      "reason": "Cooking Light recipe; original panel not locatable (MyRecipes/Cooking Light defunct); other carne asada results are different recipes, not matched"
+    },
+    {
+      "name": "Hoppin' John (Black-Eyed Peas and Rice) Recipe \ufffd SAVEUR",
+      "reason": "SAVEUR editorial recipe; no computed nutrition panel (confirmed via search); page blocks fetching"
+    },
+    {
+      "name": "Matcha Green Tea Pancakes with Strawberry Dragonfruit Syrup \ufffd Chef Charity Morgan",
+      "reason": "charitymorgan.com recipes carry no nutrition panel (site-wide; confirmed on a sibling recipe)"
+    }
+  ]
+}

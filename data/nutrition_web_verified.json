@@ -1,0 +1,33 @@
+{
+  "generated": "2026-08-21",
+  "last_updated": "2026-08-21",
+  "method": "web-search verification against published nutrition labels",
+  "note": "Each entry's ingredient list was compared verbatim against the source recipe before accepting its published nutrition. Only exact matches included.",
+  "count": 2,
+  "recipes": [
+    {
+      "id": "bd4ac4c2-99b6-4f78-b7fe-0703e6ad19bd",
+      "name": "Sweet Potato Buttered Rum Flan",
+      "cal": 230,
+      "satfat": 3.5,
+      "totalfat": 6.6,
+      "source": "web-verified",
+      "method": "web-search",
+      "source_url": "http://wegottaeat.com/eileen.stalec/recipes/sweet-potato-buttered-rum-flan",
+      "match_confidence": "exact - every ingredient and quantity matches verbatim",
+      "verified_at": "2026-08-21"
+    },
+    {
+      "id": "8637e2c7-d1ce-41c4-a214-e67df2c5b530",
+      "name": "Healthy Air Fryer Frozen Salmon | No Thaw! | What Great Grandma Ate",
+      "cal": 246,
+      "satfat": 2.0,
+      "totalfat": 11.0,
+      "source": "web-verified",
+      "method": "web-search",
+      "source_url": "https://whatgreatgrandmaate.com/air-fryer-frozen-salmon/",
+      "match_confidence": "exact - every ingredient and quantity matches verbatim",
+      "verified_at": "2026-08-21"
+    }
+  ]
+}

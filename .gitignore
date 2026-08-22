@@ -19,3 +19,6 @@ __pycache__/
 
 # enrichment run log
 tools/run.log
+
+# Web-verify: keep the full personal recipe DB out of the public repo
+tools/web_verify/chef_claude_recipe_database.json
