@@ -41,6 +41,11 @@ except ImportError:
 
 FDC_SEARCH = "https://api.nal.usda.gov/fdc/v1/foods/search"
 ENERGY_ID, SATFAT_ID = 1008, 1258          # USDA nutrient IDs (per 100 g for Foundation/SR)
+# Full macro panel we pull from each USDA food (per 100 g). Ordered; drives cache + CSV columns.
+NUTRIENTS = {"cal": 1008, "protein": 1003, "fat": 1004, "carbs": 1005,
+             "sugar": 2000, "fiber": 1079, "sodium": 1093, "satfat": 1258}
+ID2KEY = {v: k for k, v in NUTRIENTS.items()}
+MACRO_KEYS = list(NUTRIENTS)               # cal, protein, fat, carbs, sugar, fiber, sodium, satfat
 PREFERRED_TYPES = ["Foundation", "SR Legacy"]  # generic, per-100g edible portion
 
 # ---------------------------------------------------------------- unit / portion maps
@@ -149,6 +154,10 @@ class FDC:
         if Path(cache_path).exists():
             try: self.cache = json.load(open(cache_path))
             except Exception: self.cache = {}
+        # Backfill migration: drop legacy 2-field [kcal, satfat] entries so they are
+        # re-fetched into the full macro panel. Keep dict panels and None (no-match).
+        self.cache = {k: v for k, v in self.cache.items()
+                      if v is None or isinstance(v, dict)}
         self.calls = 0
         # Proactive throttle: keep real API calls under the free-key ~1000/hour limit.
         self.min_interval = 3600.0 / max_per_hour if max_per_hour else 0.0
@@ -164,11 +173,11 @@ class FDC:
         self._last_call = time.time()
 
     def lookup(self, food_name):
-        """Return (kcal_per_100g, satfat_per_100g) or None. Cached by cleaned name."""
+        """Return a per-100 g macro dict (keys = MACRO_KEYS) or None. Cached by cleaned name."""
         key = food_name.strip().lower()
         if not key: return None
         if key in self.cache:
-            v = self.cache[key]; return tuple(v) if v else None
+            return self.cache[key] or None
         params = {"api_key": self.key, "query": key, "pageSize": 5,
                   "dataType": PREFERRED_TYPES}
         for attempt in range(4):
@@ -181,7 +190,7 @@ class FDC:
                 r.raise_for_status()
                 foods = r.json().get("foods", [])
                 val = self._extract(foods)
-                self.cache[key] = list(val) if val else None
+                self.cache[key] = val if val else None
                 if self.calls % 50 == 0: self.save()
                 return val
             except requests.RequestException:
@@ -190,21 +199,24 @@ class FDC:
 
     @staticmethod
     def _extract(foods):
+        """First food carrying both energy (kcal) and sat fat wins; return full macro panel per 100 g."""
         for f in foods:
-            kcal = sat = None
+            vals = {}
             for n in f.get("foodNutrients", []):
                 nid = n.get("nutrientId") or n.get("nutrient", {}).get("id")
-                val = n.get("value", n.get("amount"))
-                if nid == ENERGY_ID and (n.get("unitName","kcal").lower() in ("kcal","")): kcal = val
-                if nid == SATFAT_ID: sat = val
-            if kcal is not None and sat is not None:
-                return (float(kcal), float(sat))
+                v = n.get("value", n.get("amount"))
+                if nid not in ID2KEY or v is None: continue
+                key = ID2KEY[nid]
+                if key == "cal" and n.get("unitName", "kcal").lower() not in ("kcal", ""): continue
+                vals[key] = float(v)
+            if "cal" in vals and "satfat" in vals:
+                return {k: vals.get(k, 0.0) for k in MACRO_KEYS}
         return None
 
 # ------------------------------------------------------------------- estimate one recipe
 def estimate(recipe, fdc):
     n_ing = matched = 0
-    kcal = satfat = 0.0
+    totals = {k: 0.0 for k in MACRO_KEYS}
     unmatched_highfat = False
     for line in recipe["ings"]:
         t = line.strip()
@@ -218,9 +230,8 @@ def estimate(recipe, fdc):
         if vals is None or g is None or g <= 0:
             if HIGH_FAT_HINT.search(t): unmatched_highfat = True
             continue
-        kc, sf = vals
-        kcal += g * kc / 100.0
-        satfat += g * sf / 100.0
+        for k in MACRO_KEYS:
+            totals[k] += g * vals[k] / 100.0
         matched += 1
     serv = yield_servings(recipe.get("yield"))
     serv_ok = serv is not None and serv >= 1
@@ -230,7 +241,9 @@ def estimate(recipe, fdc):
     conf = match_frac
     if not serv_ok: conf *= 0.75
     if unmatched_highfat: conf *= 0.25
-    return {"cal": round(kcal / serv), "satfat": round(satfat / serv, 1),
+    per = {k: round(totals[k] / serv, 1) for k in MACRO_KEYS}
+    per["cal"] = round(totals["cal"] / serv)   # kcal as whole number
+    return {**per,
             "confidence": round(conf, 3), "match_frac": round(match_frac, 3),
             "n_ing": n_ing, "servings": serv, "serv_parsed": serv_ok,
             "unmatched_highfat": unmatched_highfat}
@@ -293,6 +306,12 @@ def calibrate(recipes, fdc, tol, target, min_samples, max_bt):
 
 # ------------------------------------------------------------------- main
 def main():
+    # Windows consoles default to cp1252, which can't encode ≥ / ± in our tables.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True, help="glob to RecipeKeeper recipes.html file(s)")
     ap.add_argument("--out", default="data/recipes_enriched.json")
@@ -344,7 +363,7 @@ def main():
         if e["confidence"] >= threshold:
             enriched.append({
                 "id": r["id"], "name": r["name"],
-                "satfat": e["satfat"], "cal": e["cal"],
+                **{k: e[k] for k in MACRO_KEYS},   # cal, protein, fat, carbs, sugar, fiber, sodium, satfat
                 "source": "estimated", "method": "usda-fdc",
                 "confidence": e["confidence"], "match_frac": e["match_frac"],
                 "servings": e["servings"], "estimated_at": time.strftime("%Y-%m-%d")})
