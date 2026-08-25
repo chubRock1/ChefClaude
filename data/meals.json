@@ -82,19 +82,19 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Sesame-Lemon Cucumber Salad",
-              "satfat": 1,
-              "cal": 100,
-              "time": "~10 min",
-              "note": "fresh · cucumber",
+              "name": "Cucumber Ranch Bowl with Breaded Tofu",
+              "satfat": 4.1,
+              "cal": 654,
+              "time": "~15 min",
+              "note": "fresh · cucumber, hearty",
               "leftover": false
             },
             "dinner": {
-              "name": "Vegan Stuffed Peppers",
-              "satfat": 1,
-              "cal": 188,
-              "time": "~40 min",
-              "note": "make double → Thu · peppers",
+              "name": "Steamed Chicky Seitan",
+              "satfat": 0.8,
+              "cal": 274,
+              "time": "~30 min",
+              "note": "make double → Thu · chickpeas, hearty, low-satfat",
               "leftover": false
             }
           }
@@ -112,9 +112,9 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Vegan Stuffed Peppers",
-              "satfat": 1,
-              "cal": 188,
+              "name": "Steamed Chicky Seitan",
+              "satfat": 0.8,
+              "cal": 274,
               "time": "serve warm",
               "note": "make-ahead from Wed",
               "leftover": true
@@ -172,11 +172,11 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Chickpea-Farro Salad",
-              "satfat": 1,
-              "cal": 171,
-              "time": "~20 min",
-              "note": "fresh · chickpeas",
+              "name": "Farro and Broccoli Rabe Gratin",
+              "satfat": 2,
+              "cal": 410,
+              "time": "~30 min",
+              "note": "fresh · farro, hearty",
               "leftover": false
             },
             "dinner": {
@@ -202,19 +202,19 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Moroccan-Style Carrot Salad",
-              "satfat": 1,
-              "cal": 120,
+              "name": "Beet and Carrot Noodle Salad with Chicken",
+              "satfat": 4,
+              "cal": 510,
               "time": "~15 min",
-              "note": "fresh",
+              "note": "fresh · carrot, hearty",
               "leftover": false
             },
             "dinner": {
-              "name": "Mujadara",
-              "satfat": 1,
-              "cal": 276,
-              "time": "~40 min",
-              "note": "lentils",
+              "name": "Smoky Lentil Stew",
+              "satfat": 2,
+              "cal": 382,
+              "time": "~35 min",
+              "note": "lentils, hearty",
               "leftover": false
             }
           }
@@ -315,19 +315,19 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Mâche Salad with Cucumber and Mint",
-              "satfat": 1.5,
-              "cal": 120,
-              "time": "~10 min",
+              "name": "Banh Mi",
+              "satfat": 2,
+              "cal": 391,
+              "time": "~15 min",
               "note": "fresh · cucumber",
               "leftover": false
             },
             "dinner": {
-              "name": "Chana Masala",
-              "satfat": 0.8,
-              "cal": 158,
+              "name": "Fregula with Chickpeas, Tomatoes, and Fennel",
+              "satfat": 2,
+              "cal": 557,
               "time": "~35 min",
-              "note": "make double → Tue · tomato+chickpeas",
+              "note": "make double → Tue · tomato+chickpeas, hearty",
               "leftover": false
             }
           }
@@ -345,9 +345,9 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Chana Masala",
-              "satfat": 0.8,
-              "cal": 158,
+              "name": "Fregula with Chickpeas, Tomatoes, and Fennel",
+              "satfat": 2,
+              "cal": 557,
               "time": "serve warm",
               "note": "make-ahead from Mon",
               "leftover": true
@@ -495,11 +495,11 @@
               "leftover": false
             },
             "lunch": {
-              "name": "Sesame-Lemon Cucumber Salad",
+              "name": "Gochujang Tofu and Rice Bowls",
               "satfat": 1,
-              "cal": 100,
-              "time": "~10 min",
-              "note": "fresh · cucumber",
+              "cal": 390,
+              "time": "~20 min",
+              "note": "fresh · hearty",
               "leftover": false
             },
             "dinner": {
