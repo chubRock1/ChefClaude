@@ -1,5 +1,23 @@
 [
   {
+    "receivedAt": "2026-08-25T12:21:40.672Z",
+    "target": "next new week",
+    "veg": [
+      "Tomatoes",
+      "Peppers",
+      "Kale",
+      "Cucumber"
+    ],
+    "protein": [
+      "Chicken",
+      "Salmon",
+      "Tuna",
+      "Lentils",
+      "Chickpeas / beans"
+    ],
+    "notes": ""
+  },
+  {
     "receivedAt": "2026-08-20T00:22:18.059Z",
     "target": "next new week",
     "veg": [
