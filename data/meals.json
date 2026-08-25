@@ -271,7 +271,33 @@
             "leftover": false
           }
         ]
-      }
+      },
+      "desserts": [
+        {
+          "name": "Honey-Glazed Peaches with Hazelnuts",
+          "satfat": 0.5,
+          "cal": 170,
+          "time": "~15 min",
+          "note": "",
+          "leftover": false
+        },
+        {
+          "name": "Strawberries with Balsamic Vinegar",
+          "satfat": 0,
+          "cal": 100,
+          "time": "~10 min",
+          "note": "make ahead",
+          "leftover": false
+        },
+        {
+          "name": "Lemon Ice",
+          "satfat": 0,
+          "cal": 110,
+          "time": "~10 min +freeze",
+          "note": "",
+          "leftover": false
+        }
+      ]
     },
     {
       "label": "Week 2 · Summer",
@@ -538,7 +564,33 @@
             "leftover": false
           }
         ]
-      }
+      },
+      "desserts": [
+        {
+          "name": "Melon, Plums, and Cherries with Mint and Vanilla",
+          "satfat": 0,
+          "cal": 70,
+          "time": "~15 min",
+          "note": "",
+          "leftover": false
+        },
+        {
+          "name": "Nectarines and Berries in Prosecco",
+          "satfat": 0,
+          "cal": 110,
+          "time": "~10 min",
+          "note": "make ahead",
+          "leftover": false
+        },
+        {
+          "name": "White Wine–Poached Pears with Lemon and Herbs",
+          "satfat": 0,
+          "cal": 230,
+          "time": "~30 min",
+          "note": "",
+          "leftover": false
+        }
+      ]
     }
   ]
 }
