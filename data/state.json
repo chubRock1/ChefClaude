@@ -4,7 +4,8 @@
     "6tk9up|0|D|0": true,
     "6tk9up|0|0|lunch": true,
     "6tk9up|0|5|dinner": true,
-    "6tk9up|0|6|breakfast": true
+    "6tk9up|0|6|breakfast": true,
+    "s9ynde|1|2|lunch": true
   },
   "planned": {},
   "week": 0,
@@ -37,8 +38,8 @@
       "week": "Week 1 · Summer"
     },
     "Nectarine-and-Chickpea Couscous Salad with Honey-Cumin Dressing": {
-      "at": "2026-08-23T19:09:16.261Z",
-      "week": "Week 1 · Summer"
+      "at": "2026-08-26T23:35:57.216Z",
+      "week": "Week 2 · Summer"
     }
   }
 }
